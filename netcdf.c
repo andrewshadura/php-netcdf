@@ -60,11 +60,16 @@ zend_function_entry netcdf_functions[] = {
 
 	PHP_FE(nc_set_fill, NULL)
 
+	PHP_FE(nc_def_dim, NULL)
+	PHP_FE(nc_inq_dimid, NULL)
+
 	PHP_FE(nc_inq_dim, NULL)
 	PHP_FE(nc_inq_dimname, NULL)
 	PHP_FE(nc_inq_dimlen, NULL)
 	PHP_FE(nc_inq_varname, NULL)
 	PHP_FE(nc_inq_attname, NULL)
+
+	PHP_FE(nc_rename_dim, NULL)
 
 	{NULL, NULL, NULL}	/* Must be the last line in netcdf_functions[] */
 };
@@ -416,6 +421,44 @@ PHP_FUNCTION(nc_set_fill)
 }
 /* }}} */
 
+/* {{{ proto int nc_def_dim(int ncid, string name, int len, int &dimid)
+   Adds a new dimension to an open netCDF dataset in define mode */
+PHP_FUNCTION(nc_def_dim)
+{
+	int ncid, len, dimid, result;
+	char *name = NULL;
+	zval *zdimid;
+
+	if ((ZEND_NUM_ARGS() != 4) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "lslz", &ncid, &name, &len, &zdimid) != SUCCESS)) {
+		WRONG_PARAM_COUNT;
+	}
+
+	result=nc_def_dim(ncid, name, len, &dimid);
+	ZVAL_LONG(zdimid, dimid);
+
+	RETURN_LONG(result);
+}
+/* }}} */
+
+/* {{{ proto int nc_inq_dimid(int ncid, string name, int &dimid)
+   Returns the ID of a netCDF dimension, given the name of the dimension */
+PHP_FUNCTION(nc_inq_dimid)
+{
+	int ncid, dimid, result;
+	char *name = NULL;
+	zval *zdimid;
+
+	if ((ZEND_NUM_ARGS() != 3) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "lsz", &ncid, &name, &zdimid) != SUCCESS)) {
+		WRONG_PARAM_COUNT;
+	}
+
+	result=nc_inq_dimid(ncid, name, &dimid);
+	ZVAL_LONG(zdimid, dimid);
+
+	RETURN_LONG(result);
+}
+/* }}} */
+
 /* {{{ proto int nc_inq_dim(int ncid, int dimid, string &name, int &length)
    Returns information about an open netCDF dimension */
 
@@ -471,6 +514,23 @@ PHP_FUNCTION(nc_inq_dimlen)
 
 	result=nc_inq_dimlen(ncid, dimid, &length);
 	ZVAL_LONG(zlength, length);
+
+	RETURN_LONG(result);
+}
+/* }}} */
+
+/* {{{ proto int nc_rename_dim(int ncid, int dimid, string name)
+   Renames an existing dimension in a netCDF dataset open for writing */
+PHP_FUNCTION(nc_rename_dim)
+{
+	int ncid, dimid, result;
+	char *name = NULL;
+
+	if ((ZEND_NUM_ARGS() != 3) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "lls", &ncid, &dimid, &name) != SUCCESS)) {
+		WRONG_PARAM_COUNT;
+	}
+
+	result=nc_rename_dim(ncid, dimid, name);
 
 	RETURN_LONG(result);
 }

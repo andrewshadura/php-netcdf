@@ -43,7 +43,14 @@ PHP_RINIT_FUNCTION(netcdf);
 PHP_RSHUTDOWN_FUNCTION(netcdf);
 PHP_MINFO_FUNCTION(netcdf);
 
+PHP_FUNCTION(nc_strerror);
+
+PHP_FUNCTION(nc_inq_libvers);
+
+PHP_FUNCTION(nc_create);
 PHP_FUNCTION(nc_open);
+PHP_FUNCTION(nc_redef);
+PHP_FUNCTION(nc_enddef);
 PHP_FUNCTION(nc_close);
 
 PHP_FUNCTION(nc_inq);
@@ -52,7 +59,23 @@ PHP_FUNCTION(nc_inq_nvars);
 PHP_FUNCTION(nc_inq_natts);
 PHP_FUNCTION(nc_inq_unlimdim);
 
+PHP_FUNCTION(nc_sync);
+PHP_FUNCTION(nc_abort);
+
+PHP_FUNCTION(nc_set_fill);
+
+PHP_FUNCTION(nc_def_dim);
+PHP_FUNCTION(nc_inq_dimid);
+
 PHP_FUNCTION(nc_inq_dim);
+PHP_FUNCTION(nc_inq_dimname);
+PHP_FUNCTION(nc_inq_dimlen);
+
+PHP_FUNCTION(nc_rename_dim);
+
+PHP_FUNCTION(nc_inq_varname);
+
+PHP_FUNCTION(nc_inq_attname);
 
 /* 
   	Declare any global variables you may need between the BEGIN

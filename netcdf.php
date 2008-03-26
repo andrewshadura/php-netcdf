@@ -19,8 +19,19 @@ echo "ndims=".$ndims.",nvars=".$nvars.",ngatts=".$ngatts.",unlimdimid=".$unlimdi
 echo "Dimensions:\n";
 for ($i=0; $i<$ndims; $i++)
 {
-# echo "nc_inq_dim($i)=".
   nc_inq_dim($q, $i, &$name, &$length);
+  echo "\t".$name."\n";
+}
+echo "Variables:\n";
+for ($i=0; $i<$nvars; $i++)
+{
+  nc_inq_varname($q, $i, &$name);
+  echo "\t".$name."\n";
+}
+echo "Global attributes:\n";
+for ($i=0; $i<$ngatts; $i++)
+{
+  nc_inq_attname($q, -1, $i, &$name);
   echo "\t".$name."\n";
 }
 echo "nc_close()=".nc_close($q)."\n";
