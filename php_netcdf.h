@@ -52,6 +52,8 @@ PHP_FUNCTION(nc_inq_nvars);
 PHP_FUNCTION(nc_inq_natts);
 PHP_FUNCTION(nc_inq_unlimdim);
 
+PHP_FUNCTION(nc_inq_dim);
+
 /* 
   	Declare any global variables you may need between the BEGIN
 	and END macros here:     

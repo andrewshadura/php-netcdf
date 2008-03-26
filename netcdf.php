@@ -14,7 +14,14 @@ echo "$br\n";
 $filename="/home/andrew/brandies.nc";
 echo "nc_open($filename,0)=".nc_open($filename,0,&$q)."\n";
 echo "ncid=".$q."\n";
-echo "nc_inq()=".nc_inq($q,&$ndimsp,&$nvarsp,&$ngattsp,&$unlimdimidp);
-echo "ndims=".$ndimsp.",nvars=".$nvarsp.",ngatts=".$ngattsp.",unlimdimid=".$unlimdimidp;
+echo "nc_inq()=".nc_inq($q,&$ndims,&$nvars,&$ngatts,&$unlimdimid)."\n";
+echo "ndims=".$ndims.",nvars=".$nvars.",ngatts=".$ngatts.",unlimdimid=".$unlimdimid,"\n";
+echo "Dimensions:\n";
+for ($i=0; $i<$ndims; $i++)
+{
+# echo "nc_inq_dim($i)=".
+  nc_inq_dim($q, $i, &$name, &$length);
+  echo "\t".$name."\n";
+}
 echo "nc_close()=".nc_close($q)."\n";
 ?>

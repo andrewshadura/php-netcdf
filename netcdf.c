@@ -46,6 +46,7 @@ zend_function_entry netcdf_functions[] = {
 	PHP_FE(nc_inq_nvars, NULL)
 	PHP_FE(nc_inq_natts, NULL)
 	PHP_FE(nc_inq_unlimdim, NULL)
+	PHP_FE(nc_inq_dim, NULL)
 	{NULL, NULL, NULL}	/* Must be the last line in netcdf_functions[] */
 };
 /* }}} */
@@ -253,7 +254,7 @@ PHP_FUNCTION(nc_inq_nvars)
 
 /* {{{ proto string nc_inq_natts(int ncid, int &ngatts)
    Returns information about an open netCDF dataset */
-PHP_FUNCTION(nc_natts)
+PHP_FUNCTION(nc_inq_natts)
 {
 	int ncid, ngatts, result;
 	zval *zngatts;
@@ -271,7 +272,7 @@ PHP_FUNCTION(nc_natts)
 
 /* {{{ proto string nc_inq_unlimdim(int ncid, int &unlimdimid)
    Returns information about an open netCDF dataset */
-PHP_FUNCTION(nc_unlimdim)
+PHP_FUNCTION(nc_inq_unlimdim)
 {
 	int ncid, unlimdimid, result;
 	zval *zunlimdimid;
@@ -282,6 +283,27 @@ PHP_FUNCTION(nc_unlimdim)
 	
 	result=nc_inq_unlimdim(ncid, &unlimdimid);
 	ZVAL_LONG(zunlimdimid, unlimdimid);
+
+	RETURN_LONG(result);
+}
+/* }}} */
+
+/* {{{ proto string nc_inq_dim(int ncid, int dimid, string &name, int &length)
+   Returns information about an open netCDF dataset */
+
+PHP_FUNCTION(nc_inq_dim)
+{
+	int ncid, dimid, length, result;
+	char name[NC_MAX_NAME];
+	zval *zname, *zlength;
+
+	if ((ZEND_NUM_ARGS() != 4) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "llzz", &ncid, &dimid, &zname, &zlength) != SUCCESS)) {
+	    WRONG_PARAM_COUNT;
+	}
+	
+	result=nc_inq_dim(ncid, dimid, name, &length);
+	ZVAL_STRING(zname, name, 1);
+	ZVAL_LONG(zlength, length);
 
 	RETURN_LONG(result);
 }
