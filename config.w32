@@ -1,0 +1,13 @@
+// $Id$
+// vim:ft=javascript
+
+// If your extension references something external, use ARG_WITH
+ARG_WITH("netcdf", "for netcdf support", "no");
+
+// Otherwise, use ARG_ENABLE
+// ARG_ENABLE("netcdf", "enable netcdf support", "no");
+
+if (PHP_NETCDF != "no") {
+	EXTENSION("netcdf", "netcdf.c");
+}
+
