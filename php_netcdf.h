@@ -47,6 +47,8 @@ PHP_FUNCTION(nc_strerror);
 
 PHP_FUNCTION(nc_inq_libvers);
 
+PHP_FUNCTION(nc_strtype);
+
 PHP_FUNCTION(nc_create);
 PHP_FUNCTION(nc_open);
 PHP_FUNCTION(nc_redef);
@@ -73,9 +75,18 @@ PHP_FUNCTION(nc_inq_dimlen);
 
 PHP_FUNCTION(nc_rename_dim);
 
+PHP_FUNCTION(nc_def_var);
+PHP_FUNCTION(nc_inq_var);
+PHP_FUNCTION(nc_inq_varid);
 PHP_FUNCTION(nc_inq_varname);
+PHP_FUNCTION(nc_inq_vartype);
+PHP_FUNCTION(nc_inq_varndims);
+PHP_FUNCTION(nc_inq_vardimid);
+PHP_FUNCTION(nc_inq_varnatts);
 
 PHP_FUNCTION(nc_inq_attname);
+
+PHP_FUNCTION(nc_get_var1_float);
 
 /* 
   	Declare any global variables you may need between the BEGIN

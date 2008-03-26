@@ -34,6 +34,8 @@ ZEND_DECLARE_MODULE_GLOBALS(netcdf)
 /* True global resources - no need for thread safety here */
 static int le_netcdf;
 
+static char* netcdf_types[7] = { "NC_NAT", "NC_BYTE", "NC_CHAR", "NC_SHORT", "NC_INT", "NC_FLOAT", "NC_DOUBLE" };
+
 /* {{{ netcdf_functions[]
  *
  * Every user visible function must have an entry in netcdf_functions[].
@@ -42,6 +44,8 @@ zend_function_entry netcdf_functions[] = {
 	PHP_FE(nc_strerror, NULL)
 
 	PHP_FE(nc_inq_libvers, NULL)
+
+	PHP_FE(nc_strtype, NULL)
 
 	PHP_FE(nc_create, NULL)
 	PHP_FE(nc_open, NULL)
@@ -66,10 +70,17 @@ zend_function_entry netcdf_functions[] = {
 	PHP_FE(nc_inq_dim, NULL)
 	PHP_FE(nc_inq_dimname, NULL)
 	PHP_FE(nc_inq_dimlen, NULL)
-	PHP_FE(nc_inq_varname, NULL)
-	PHP_FE(nc_inq_attname, NULL)
 
 	PHP_FE(nc_rename_dim, NULL)
+
+	PHP_FE(nc_def_var, NULL)
+	PHP_FE(nc_inq_var, NULL)
+	PHP_FE(nc_inq_varname, NULL)
+	PHP_FE(nc_inq_vartype, NULL)
+	PHP_FE(nc_inq_varndims, NULL)
+	PHP_FE(nc_inq_vardimid, NULL)
+	PHP_FE(nc_inq_varnatts, NULL)
+	PHP_FE(nc_inq_attname, NULL)
 
 	{NULL, NULL, NULL}	/* Must be the last line in netcdf_functions[] */
 };
@@ -127,6 +138,55 @@ PHP_MINIT_FUNCTION(netcdf)
 	/* If you have INI entries, uncomment these lines 
 	REGISTER_INI_ENTRIES();
 	*/
+	REGISTER_LONG_CONSTANT("NC_NAT", NC_NAT, CONST_CS | CONST_PERSISTENT);
+	REGISTER_LONG_CONSTANT("NC_BYTE", NC_BYTE, CONST_CS | CONST_PERSISTENT);
+	REGISTER_LONG_CONSTANT("NC_CHAR", NC_CHAR, CONST_CS | CONST_PERSISTENT);
+	REGISTER_LONG_CONSTANT("NC_SHORT", NC_SHORT, CONST_CS | CONST_PERSISTENT);
+	REGISTER_LONG_CONSTANT("NC_INT", NC_INT, CONST_CS | CONST_PERSISTENT);
+	REGISTER_LONG_CONSTANT("NC_FLOAT", NC_FLOAT, CONST_CS | CONST_PERSISTENT);
+	REGISTER_LONG_CONSTANT("NC_DOUBLE", NC_DOUBLE, CONST_CS | CONST_PERSISTENT);
+	REGISTER_LONG_CONSTANT("NC_FILL_BYTE", NC_FILL_BYTE, CONST_CS | CONST_PERSISTENT);
+	REGISTER_LONG_CONSTANT("NC_FILL_CHAR", NC_FILL_CHAR, CONST_CS | CONST_PERSISTENT);
+	REGISTER_LONG_CONSTANT("NC_FILL_SHORT", NC_FILL_SHORT, CONST_CS | CONST_PERSISTENT);
+	REGISTER_LONG_CONSTANT("NC_FILL_INT", NC_FILL_INT, CONST_CS | CONST_PERSISTENT);
+	REGISTER_DOUBLE_CONSTANT("NC_FILL_FLOAT", NC_FILL_FLOAT, CONST_CS | CONST_PERSISTENT);
+	REGISTER_DOUBLE_CONSTANT("NC_FILL_DOUBLE", NC_FILL_DOUBLE, CONST_CS | CONST_PERSISTENT);
+	REGISTER_LONG_CONSTANT("NC_NOWRITE", NC_NOWRITE, CONST_CS | CONST_PERSISTENT);
+	REGISTER_LONG_CONSTANT("NC_WRITE", NC_WRITE, CONST_CS | CONST_PERSISTENT);
+	REGISTER_LONG_CONSTANT("NC_CLOBBER", NC_CLOBBER, CONST_CS | CONST_PERSISTENT);
+	REGISTER_LONG_CONSTANT("NC_NOCLOBBER", NC_NOCLOBBER, CONST_CS | CONST_PERSISTENT);
+	REGISTER_LONG_CONSTANT("NC_FILL", NC_FILL, CONST_CS | CONST_PERSISTENT);
+	REGISTER_LONG_CONSTANT("NC_NOFILL", NC_NOFILL, CONST_CS | CONST_PERSISTENT);
+	REGISTER_LONG_CONSTANT("NC_LOCK", NC_LOCK, CONST_CS | CONST_PERSISTENT);
+	REGISTER_LONG_CONSTANT("NC_SHARE", NC_SHARE, CONST_CS | CONST_PERSISTENT);
+	REGISTER_LONG_CONSTANT("NC_SIZEHINT_DEFAULT", NC_SIZEHINT_DEFAULT, CONST_CS | CONST_PERSISTENT);
+	REGISTER_LONG_CONSTANT("NC_ALIGN_CHUNK", NC_ALIGN_CHUNK, CONST_CS | CONST_PERSISTENT);
+	REGISTER_LONG_CONSTANT("NC_UNLIMITED", NC_UNLIMITED, CONST_CS | CONST_PERSISTENT);
+	REGISTER_LONG_CONSTANT("NC_GLOBAL", NC_GLOBAL, CONST_CS | CONST_PERSISTENT);
+	REGISTER_LONG_CONSTANT("NC_MAX_DIMS", NC_MAX_DIMS, CONST_CS | CONST_PERSISTENT);
+	REGISTER_LONG_CONSTANT("NC_MAX_ATTRS", NC_MAX_ATTRS, CONST_CS | CONST_PERSISTENT);
+	REGISTER_LONG_CONSTANT("NC_MAX_VARS", NC_MAX_VARS, CONST_CS | CONST_PERSISTENT);
+	REGISTER_LONG_CONSTANT("NC_MAX_NAME", NC_MAX_NAME, CONST_CS | CONST_PERSISTENT);
+	REGISTER_LONG_CONSTANT("NC_MAX_VAR_DIMS", NC_MAX_VAR_DIMS, CONST_CS | CONST_PERSISTENT);
+	REGISTER_LONG_CONSTANT("NC_ENOTATT", NC_ENOTATT, CONST_CS | CONST_PERSISTENT);
+	REGISTER_LONG_CONSTANT("NC_EBADTYPE", NC_EBADTYPE, CONST_CS | CONST_PERSISTENT);
+	REGISTER_LONG_CONSTANT("NC_EBADDIM", NC_EBADDIM, CONST_CS | CONST_PERSISTENT);
+	REGISTER_LONG_CONSTANT("NC_EUNLIMPOS", NC_EUNLIMPOS, CONST_CS | CONST_PERSISTENT);
+	REGISTER_LONG_CONSTANT("NC_ENOTVAR", NC_ENOTVAR, CONST_CS | CONST_PERSISTENT);
+	REGISTER_LONG_CONSTANT("NC_EGLOBAL", NC_EGLOBAL, CONST_CS | CONST_PERSISTENT);
+	REGISTER_LONG_CONSTANT("NC_ENOTNC", NC_ENOTNC, CONST_CS | CONST_PERSISTENT);
+	REGISTER_LONG_CONSTANT("NC_ESTS", NC_ESTS, CONST_CS | CONST_PERSISTENT);
+	REGISTER_LONG_CONSTANT("NC_EMAXNAME", NC_EMAXNAME, CONST_CS | CONST_PERSISTENT);
+	REGISTER_LONG_CONSTANT("NC_EUNLIMIT", NC_EUNLIMIT, CONST_CS | CONST_PERSISTENT);
+	REGISTER_LONG_CONSTANT("NC_ENORECVARS", NC_ENORECVARS, CONST_CS | CONST_PERSISTENT);
+	REGISTER_LONG_CONSTANT("NC_ECHAR", NC_ECHAR, CONST_CS | CONST_PERSISTENT);
+	REGISTER_LONG_CONSTANT("NC_EEDGE", NC_EEDGE, CONST_CS | CONST_PERSISTENT);
+	REGISTER_LONG_CONSTANT("NC_ESTRIDE", NC_ESTRIDE, CONST_CS | CONST_PERSISTENT);
+	REGISTER_LONG_CONSTANT("NC_EBADNAME", NC_EBADNAME, CONST_CS | CONST_PERSISTENT);
+	REGISTER_LONG_CONSTANT("NC_ERANGE", NC_ERANGE, CONST_CS | CONST_PERSISTENT);
+	REGISTER_LONG_CONSTANT("NC_ENOMEM", NC_ENOMEM, CONST_CS | CONST_PERSISTENT);
+	REGISTER_LONG_CONSTANT("NC_LONG", NC_LONG, CONST_CS | CONST_PERSISTENT);
+	REGISTER_LONG_CONSTANT("NC_ENTOOL", NC_ENTOOL, CONST_CS | CONST_PERSISTENT);
 	return SUCCESS;
 }
 /* }}} */
@@ -183,7 +243,8 @@ PHP_MINFO_FUNCTION(netcdf)
 PHP_FUNCTION(nc_create)
 {
 	char *path = NULL;
-	int path_len, cmode, ncid, result;
+	long path_len, cmode, result;
+	int ncid;
 	zval *zncid;
 
 	if ((ZEND_NUM_ARGS() != 3) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "slz", &path, &path_len, &cmode, &zncid) != SUCCESS)) {
@@ -209,7 +270,8 @@ PHP_FUNCTION(nc_create)
 PHP_FUNCTION(nc_open)
 {
 	char *path = NULL;
-	int path_len, mode, ncid, result;
+	long path_len, mode, result;
+	int ncid;
 	zval *zncid;
 
 	if ((ZEND_NUM_ARGS() != 3) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "slz", &path, &path_len, &mode, &zncid) != SUCCESS)) {
@@ -234,7 +296,7 @@ PHP_FUNCTION(nc_open)
    Puts an open netCDF dataset into define mode */
 PHP_FUNCTION(nc_redef)
 {
-	int ncid, result;
+	long ncid, result;
 
 	if ((ZEND_NUM_ARGS() != 1) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l", &ncid) != SUCCESS)) {
 		WRONG_PARAM_COUNT;
@@ -250,7 +312,7 @@ PHP_FUNCTION(nc_redef)
    Takes an open netCDF dataset out of define mode */
 PHP_FUNCTION(nc_enddef)
 {
-	int ncid, result;
+	long ncid, result;
 
 	if ((ZEND_NUM_ARGS() != 1) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l", &ncid) != SUCCESS)) {
 		WRONG_PARAM_COUNT;
@@ -266,7 +328,7 @@ PHP_FUNCTION(nc_enddef)
    Closes an open netCDF dataset */
 PHP_FUNCTION(nc_close)
 {
-	int ncid, result;
+	long ncid, result;
 
 	if ((ZEND_NUM_ARGS() != 1) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l", &ncid) != SUCCESS)) {
 		WRONG_PARAM_COUNT;
@@ -282,7 +344,8 @@ PHP_FUNCTION(nc_close)
    Returns information about an open netCDF dataset */
 PHP_FUNCTION(nc_inq)
 {
-	int ncid, ndims, nvars, ngatts, unlimdimid, result;
+	long ncid, result;
+	int ndims, nvars, ngatts, unlimdimid;
 	zval *zndims, *znvars, *zngatts, *zunlimdimid;
 
 	if ((ZEND_NUM_ARGS() != 5) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "lzzzz", &ncid, &zndims, &znvars, &zngatts, &zunlimdimid) != SUCCESS)) {
@@ -303,7 +366,8 @@ PHP_FUNCTION(nc_inq)
    Returns information about an open netCDF dataset */
 PHP_FUNCTION(nc_inq_ndims)
 {
-	int ncid, ndims, result;
+	long ncid, result;
+	int ndims;
 	zval *zndims;
 
 	if ((ZEND_NUM_ARGS() != 2) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "lz", &ncid, &zndims) != SUCCESS)) {
@@ -321,7 +385,8 @@ PHP_FUNCTION(nc_inq_ndims)
    Returns information about an open netCDF dataset */
 PHP_FUNCTION(nc_inq_nvars)
 {
-	int ncid, nvars, result;
+	long ncid, result;
+	int nvars;
 	zval *znvars;
 
 	if ((ZEND_NUM_ARGS() != 2) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "lz", &ncid, &znvars) != SUCCESS)) {
@@ -339,7 +404,8 @@ PHP_FUNCTION(nc_inq_nvars)
    Returns information about an open netCDF dataset */
 PHP_FUNCTION(nc_inq_natts)
 {
-	int ncid, ngatts, result;
+	long ncid, result;
+	int ngatts;
 	zval *zngatts;
 
 	if ((ZEND_NUM_ARGS() != 2) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "lz", &ncid, &zngatts) != SUCCESS)) {
@@ -357,7 +423,8 @@ PHP_FUNCTION(nc_inq_natts)
    Returns information about an open netCDF dataset */
 PHP_FUNCTION(nc_inq_unlimdim)
 {
-	int ncid, unlimdimid, result;
+	long ncid, result;
+	int unlimdimid;
 	zval *zunlimdimid;
 
 	if ((ZEND_NUM_ARGS() != 2) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "lz", &ncid, &zunlimdimid) != SUCCESS)) {
@@ -375,7 +442,7 @@ PHP_FUNCTION(nc_inq_unlimdim)
    Synchronizes the disk copy of a netCDF dataset with in-memory buffers */
 PHP_FUNCTION(nc_sync)
 {
-	int ncid, result;
+	long ncid, result;
 
 	if ((ZEND_NUM_ARGS() != 1) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l", &ncid) != SUCCESS)) {
 		WRONG_PARAM_COUNT;
@@ -391,7 +458,7 @@ PHP_FUNCTION(nc_sync)
    Backs out of recent definitions */
 PHP_FUNCTION(nc_abort)
 {
-	int ncid, result;
+	long ncid, result;
 
 	if ((ZEND_NUM_ARGS() != 1) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l", &ncid) != SUCCESS)) {
 		WRONG_PARAM_COUNT;
@@ -407,7 +474,8 @@ PHP_FUNCTION(nc_abort)
    Sets the fill mode for a netCDF dataset open for writing */
 PHP_FUNCTION(nc_set_fill)
 {
-	int ncid, fillmode, old_mode, result;
+	long ncid, fillmode, result;
+	int old_mode;
 	zval *zold_mode;
 
 	if ((ZEND_NUM_ARGS() != 3) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "llz", &ncid, &fillmode, &zold_mode) != SUCCESS)) {
@@ -425,7 +493,8 @@ PHP_FUNCTION(nc_set_fill)
    Adds a new dimension to an open netCDF dataset in define mode */
 PHP_FUNCTION(nc_def_dim)
 {
-	int ncid, len, dimid, result;
+	long ncid, len, result;
+	int dimid;
 	char *name = NULL;
 	zval *zdimid;
 
@@ -444,7 +513,8 @@ PHP_FUNCTION(nc_def_dim)
    Returns the ID of a netCDF dimension, given the name of the dimension */
 PHP_FUNCTION(nc_inq_dimid)
 {
-	int ncid, dimid, result;
+	long ncid, result;
+	int dimid;
 	char *name = NULL;
 	zval *zdimid;
 
@@ -464,7 +534,8 @@ PHP_FUNCTION(nc_inq_dimid)
 
 PHP_FUNCTION(nc_inq_dim)
 {
-	int ncid, dimid, length, result;
+	long ncid, dimid, result;
+	int length;
 	char name[NC_MAX_NAME];
 	zval *zname, *zlength;
 
@@ -485,7 +556,7 @@ PHP_FUNCTION(nc_inq_dim)
 
 PHP_FUNCTION(nc_inq_dimname)
 {
-	int ncid, dimid, result;
+	long ncid, dimid, result;
 	char name[NC_MAX_NAME];
 	zval *zname;
 
@@ -505,7 +576,8 @@ PHP_FUNCTION(nc_inq_dimname)
 
 PHP_FUNCTION(nc_inq_dimlen)
 {
-	int ncid, dimid, length, result;
+	long ncid, dimid, result;
+	int length;
 	zval *zlength;
 
 	if ((ZEND_NUM_ARGS() != 3) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "llz", &ncid, &dimid, &zlength) != SUCCESS)) {
@@ -523,7 +595,7 @@ PHP_FUNCTION(nc_inq_dimlen)
    Renames an existing dimension in a netCDF dataset open for writing */
 PHP_FUNCTION(nc_rename_dim)
 {
-	int ncid, dimid, result;
+	long ncid, dimid, result;
 	char *name = NULL;
 
 	if ((ZEND_NUM_ARGS() != 3) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "lls", &ncid, &dimid, &name) != SUCCESS)) {
@@ -536,18 +608,85 @@ PHP_FUNCTION(nc_rename_dim)
 }
 /* }}} */
 
+/* {{{ proto int nc_def_var(int ncid, string name, int xtype, int ndims, int dimids[], int &varid)
+   Adds a new variable to an open netCDF dataset in define mode */
+
+PHP_FUNCTION(nc_def_var)
+{
+	long ncid, xtype, ndims, i=0;
+	int varid;
+	char *name = NULL;
+	int dimids[NC_MAX_VAR_DIMS];
+	long result;
+	zval *zdimids, *zvarid;
+	zval **data;
+	HashTable *arr_hash;
+	HashPosition pointer;
+
+	if ((ZEND_NUM_ARGS() != 6) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "lsllaz", &ncid, &name, &xtype, &ndims, &zdimids, &zvarid) != SUCCESS)) {
+		WRONG_PARAM_COUNT;
+	}
+
+	arr_hash = Z_ARRVAL_P(zdimids);
+	for (zend_hash_internal_pointer_reset_ex(arr_hash, &pointer); (i<ndims) && (zend_hash_get_current_data_ex(arr_hash, (void**) &data, &pointer) == SUCCESS); i++)
+	{
+		if (Z_TYPE_PP(data) == IS_LONG)
+			dimids[i]=Z_LVAL_PP(data);
+		zend_hash_move_forward_ex(arr_hash, &pointer);
+	}
+	result=nc_def_var(ncid, name, xtype, ndims, dimids, &varid);
+	ZVAL_LONG(zvarid, varid);
+
+	RETURN_LONG(result);
+}
+/* }}} */
+
+/* {{{ proto int nc_inq_var(int ncid, int varid, string &name,
+ int *xtypep, int *ndimsp, int *dimidsp, int *nattsp); */
+PHP_FUNCTION(nc_inq_var)
+{
+	int argc = ZEND_NUM_ARGS();
+	long ncid;
+	long varid;
+	zval *zvarid;
+
+	php_error(E_WARNING, "nc_inq_var: not yet implemented");
+
+	if (zend_parse_parameters(argc TSRMLS_CC, "llz", &ncid, &varid) == FAILURE) 
+		WRONG_PARAM_COUNT;
+}
+/* }}} */
+
+/* {{{ proto int nc_inq_varid(int ncid, string name, int &varid)
+   Returns the ID of a netCDF variable, given its name */
+
+PHP_FUNCTION(nc_inq_varid)
+{
+	int ncid, varid, result;
+	char *name = NULL;
+	zval *zvarid;
+
+	if ((ZEND_NUM_ARGS() != 3) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "lsz", &ncid, &name, &zvarid) != SUCCESS))
+		WRONG_PARAM_COUNT;
+
+	result=nc_inq_varid(ncid, name, &varid);
+	ZVAL_LONG(zvarid, varid);
+
+	RETURN_LONG(result);
+}
+/* }}} */
+
 /* {{{ proto int nc_inq_varname(int ncid, int varid, string &name)
    Returns information about a netCDF variable */
 
 PHP_FUNCTION(nc_inq_varname)
 {
-	int ncid, varid, result;
+	long ncid, varid, result;
 	char name[NC_MAX_NAME];
 	zval *zname;
 
-	if ((ZEND_NUM_ARGS() != 3) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "llz", &ncid, &varid, &zname) != SUCCESS)) {
+	if ((ZEND_NUM_ARGS() != 3) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "llz", &ncid, &varid, &zname) != SUCCESS))
 		WRONG_PARAM_COUNT;
-	}
 
 	result=nc_inq_varname(ncid, varid, name);
 	ZVAL_STRING(zname, name, 1);
@@ -556,18 +695,85 @@ PHP_FUNCTION(nc_inq_varname)
 }
 /* }}} */
 
+/* {{{ proto int nc_inq_vartype(int ncid, int varid, int &xtype)
+   Returns information about a netCDF variable */
+PHP_FUNCTION(nc_inq_vartype)
+{
+	long ncid, varid, result;
+	nc_type xtype;
+	zval *zxtype;
+
+	if ((ZEND_NUM_ARGS() != 3) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "llz", &ncid, &varid, &zxtype) != SUCCESS))
+		WRONG_PARAM_COUNT;
+
+	result=nc_inq_vartype(ncid, varid, &xtype);
+	ZVAL_LONG(zxtype, xtype);
+
+	RETURN_LONG(result);
+}
+/* }}} */
+
+/* {{{ proto int nc_inq_varndims(int ncid, int varid, int &ndimsp)
+   Returns information about a netCDF variable */
+PHP_FUNCTION(nc_inq_varndims)
+{
+	long ncid, varid, result;
+	int ndims;
+	zval *zndims;
+
+	if ((ZEND_NUM_ARGS() != 3) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "llz", &ncid, &varid, &zndims) != SUCCESS))
+		WRONG_PARAM_COUNT;
+
+	result=nc_inq_varndims(ncid, varid, &ndims);
+	ZVAL_LONG(zndims, ndims);
+
+	RETURN_LONG(result);
+}
+/* }}} */
+
+/* {{{ proto int nc_inq_vardimid(int ncid, int varid, int )
+   * dimidsp); */
+PHP_FUNCTION(nc_inq_vardimid)
+{
+	int argc = ZEND_NUM_ARGS();
+	long ncid;
+	long varid;
+	long dimids;
+
+	php_error(E_WARNING, "nc_inq_vardimid: not yet implemented");
+
+	if (zend_parse_parameters(argc TSRMLS_CC, "lll", &ncid, &varid, &dimids) == FAILURE) 
+		WRONG_PARAM_COUNT;
+}
+/* }}} */
+
+/* {{{ proto int nc_inq_varnatts(int ncid, int varid, int )
+   * nattsp); */
+PHP_FUNCTION(nc_inq_varnatts)
+{
+	int argc = ZEND_NUM_ARGS();
+	long ncid;
+	long varid;
+	long natts;
+
+	php_error(E_WARNING, "nc_inq_varnatts: not yet implemented");
+
+	if (zend_parse_parameters(argc TSRMLS_CC, "lll", &ncid, &varid, &natts) == FAILURE) 
+		WRONG_PARAM_COUNT;
+}
+/* }}} */
+
 /* {{{ proto int nc_inq_attname(int ncid, int varid, int attnum, string &name)
    Returns information about a netCDF variable */
 
 PHP_FUNCTION(nc_inq_attname)
 {
-	int ncid, varid, attnum, result;
+	long ncid, varid, attnum, result;
 	char name[NC_MAX_NAME];
 	zval *zname;
 
-	if ((ZEND_NUM_ARGS() != 4) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "lllz", &ncid, &varid, &attnum, &zname) != SUCCESS)) {
+	if ((ZEND_NUM_ARGS() != 4) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "lllz", &ncid, &varid, &attnum, &zname) != SUCCESS))
 		WRONG_PARAM_COUNT;
-	}
 
 	result=nc_inq_attname(ncid, varid, attnum, name);
 	ZVAL_STRING(zname, name, 1);
@@ -576,25 +782,55 @@ PHP_FUNCTION(nc_inq_attname)
 }
 /* }}} */
 
+/* {{{ proto int nc_get_var1_float(int ncid, int varid)
+   unsigned int * indexp, float * ip); */
+PHP_FUNCTION(nc_get_var1_float)
+{
+	int argc = ZEND_NUM_ARGS();
+	long ncid;
+	long varid;
+
+	if (zend_parse_parameters(argc TSRMLS_CC, "ll", &ncid, &varid) == FAILURE) 
+		return;
+
+	php_error(E_WARNING, "nc_get_var1_float: not yet implemented");
+}
+/* }}} */
+
+/* {{{ proto int nc_get_var_float(int ncid, int varid, double &f); */
+PHP_FUNCTION(nc_get_var_float)
+{
+	int argc = ZEND_NUM_ARGS();
+	long ncid;
+	long varid;
+	zval *zf;
+
+	if ((ZEND_NUM_ARGS() != 3) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "llz", &ncid, &varid, &zf) != SUCCESS))
+		return;
+
+	//array_init(zf);
+	php_error(E_WARNING, "nc_get_var_float: not yet implemented");
+}
+/* }}} */
+
 /* {{{ proto string nc_strerror(int ncerr)
    Returns an error message string corresponding to an integer netCDF error status */
 
 PHP_FUNCTION(nc_strerror)
 {
-	int ncerr;
+	long ncerr;
 	char* result;
 
-	if ((ZEND_NUM_ARGS() != 1) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l", &ncerr) != SUCCESS)) {
+	if ((ZEND_NUM_ARGS() != 1) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l", &ncerr) != SUCCESS))
 		WRONG_PARAM_COUNT;
-	}
 
-	result=nc_strerror(ncerr);
+	result=(char *) nc_strerror(ncerr);
 
 	RETURN_STRING(result, 1);
 }
 /* }}} */
 
-/* {{{ proto string nc_nc_inq_libvers()
+/* {{{ proto string nc_inq_libvers()
    Returns a string identifying the version of the netCDF library, and when it was built */
 
 PHP_FUNCTION(nc_inq_libvers)
@@ -602,11 +838,29 @@ PHP_FUNCTION(nc_inq_libvers)
 	char* result;
 	zval *zlibvers;
 
-	if (ZEND_NUM_ARGS() != 0) {
+	if (ZEND_NUM_ARGS())
 		WRONG_PARAM_COUNT;
-	}
 
-	result=nc_inq_libvers();
+	result=(char *) nc_inq_libvers();
+
+	RETURN_STRING(result, 1);
+}
+/* }}} */
+
+/* {{{ proto string nc_strtype(int xtype)
+   Returns a string name of netCDF type by its ID */
+
+PHP_FUNCTION(nc_strtype)
+{
+	char* result;
+	long xtype;
+	zval *zlibvers;
+
+	if ((ZEND_NUM_ARGS() != 1) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l", &xtype) != SUCCESS))
+		WRONG_PARAM_COUNT;
+
+
+	result=(char *) netcdf_types[xtype];
 
 	RETURN_STRING(result, 1);
 }
