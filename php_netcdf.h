@@ -89,6 +89,15 @@ PHP_FUNCTION(nc_inq_attname);
 
 PHP_FUNCTION(nc_get_var1_float);
 
+PHP_FUNCTION(nc_put_var_text);
+PHP_FUNCTION(nc_put_var_uchar);
+PHP_FUNCTION(nc_put_var_schar);
+PHP_FUNCTION(nc_put_var_short);
+PHP_FUNCTION(nc_put_var_int);
+PHP_FUNCTION(nc_put_var_long);
+PHP_FUNCTION(nc_put_var_float);
+PHP_FUNCTION(nc_put_var_double);
+
 /* 
   	Declare any global variables you may need between the BEGIN
 	and END macros here:     

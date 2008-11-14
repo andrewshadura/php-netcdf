@@ -11,7 +11,7 @@ foreach($functions as $func) {
     echo $func."$br\n";
 }
 echo "$br\n";
-$filename="/home/andrew/brandies.nc";
+$filename=$argv[1];
 echo "nc_open($filename,0)=".nc_open($filename,0,&$q)."\n";
 echo "ncid=".$q."\n";
 echo "nc_inq()=".nc_inq($q,&$ndims,&$nvars,&$ngatts,&$unlimdimid)."\n";
