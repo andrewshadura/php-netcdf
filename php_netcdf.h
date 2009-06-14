@@ -1,20 +1,26 @@
 /*
     This file is part of netCDF for PHP.
 
-    Copyright (C) 2007, 2008 Andrew O. Shadoura
+    Copyright (C) 2007-2009 Andrew O. Shadoura
 
-    netCDF for PHP is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 2 of the License, or
-    (at your option) any later version.
+This package is open source software; you can redistribute it and/or modify
+it under the terms of either:
+
+    netCDF for PHP is free software; you can redistribute it and/or modify
+    it under the terms of either:
+      - the GNU General Public License as published by
+        the Free Software Foundation, version 2 of the License, or
+      - the GNU Lesser General Public License as published by
+        the Free Software Foundation, version 2.1 of the License
 
     netCDF for PHP is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+    License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
+    and GNU Lesser General Public License along with netCDF for PHP.
+    If not, see <http://www.gnu.org/licenses/>.
 */
 
 /* $Id$ */
