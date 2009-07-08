@@ -28,11 +28,26 @@ it under the terms of either:
 #ifndef PHP_NETCDF_H
 #define PHP_NETCDF_H
 
+#ifdef  __cplusplus
+extern "C" {
+#endif
+
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
+#ifdef HAVE_NETCDF
 
 #include <netcdf.h>
+#include <php.h>
+#include <php_ini.h>
+#include <SAPI.h>
+#include <ext/standard/info.h>
+#include <Zend/zend_extensions.h>
 
 extern zend_module_entry netcdf_module_entry;
 #define phpext_netcdf_ptr &netcdf_module_entry
+
 
 #ifdef PHP_WIN32
 #define PHP_NETCDF_API __declspec(dllexport)
@@ -44,11 +59,43 @@ extern zend_module_entry netcdf_module_entry;
 #include "TSRM.h"
 #endif
 
+#define FREE_RESOURCE(resource) zend_list_delete(Z_LVAL_P(resource))
+
+#define PROP_GET_LONG(name)    Z_LVAL_P(zend_read_property(_this_ce, _this_zval, #name, strlen(#name), 1 TSRMLS_CC))
+#define PROP_SET_LONG(name, l) zend_update_property_long(_this_ce, _this_zval, #name, strlen(#name), l TSRMLS_CC)
+
+#define PROP_GET_DOUBLE(name)    Z_DVAL_P(zend_read_property(_this_ce, _this_zval, #name, strlen(#name), 1 TSRMLS_CC))
+#define PROP_SET_DOUBLE(name, d) zend_update_property_double(_this_ce, _this_zval, #name, strlen(#name), d TSRMLS_CC)
+
+#define PROP_GET_STRING(name)    Z_STRVAL_P(zend_read_property(_this_ce, _this_zval, #name, strlen(#name), 1 TSRMLS_CC))
+#define PROP_GET_STRLEN(name)    Z_STRLEN_P(zend_read_property(_this_ce, _this_zval, #name, strlen(#name), 1 TSRMLS_CC))
+#define PROP_SET_STRING(name, s) zend_update_property_string(_this_ce, _this_zval, #name, strlen(#name), s TSRMLS_CC)
+#define PROP_SET_STRINGL(name, s, l) zend_update_property_stringl(_this_ce, _this_zval, #name, strlen(#name), s, l TSRMLS_CC)
+
+
 PHP_MINIT_FUNCTION(netcdf);
 PHP_MSHUTDOWN_FUNCTION(netcdf);
 PHP_RINIT_FUNCTION(netcdf);
 PHP_RSHUTDOWN_FUNCTION(netcdf);
 PHP_MINFO_FUNCTION(netcdf);
+
+PHP_METHOD(NetcdfDataset, __construct);
+#if (PHP_MAJOR_VERSION >= 5)
+ZEND_BEGIN_ARG_INFO_EX(NetcdfDataset____construct_args, ZEND_SEND_BY_VAL, ZEND_RETURN_VALUE, 0)
+  ZEND_ARG_INFO(0, mode)
+  ZEND_ARG_INFO(0, clobber)
+ZEND_END_ARG_INFO()
+#else /* PHP 4.x */
+#define NetcdfDataset____construct_args NULL
+#endif
+
+PHP_METHOD(NetcdfDataset, close);
+#if (PHP_MAJOR_VERSION >= 5)
+ZEND_BEGIN_ARG_INFO_EX(NetcdfDataset__close_args, ZEND_SEND_BY_VAL, ZEND_RETURN_VALUE, 0)
+ZEND_END_ARG_INFO()
+#else /* PHP 4.x */
+#define NetcdfDataset__close_args NULL
+#endif
 
 PHP_FUNCTION(nc_strerror);
 
@@ -130,8 +177,13 @@ ZEND_END_MODULE_GLOBALS(netcdf)
 #define NETCDF_G(v) (netcdf_globals.v)
 #endif
 
-#endif	/* PHP_NETCDF_H */
+#ifdef  __cplusplus
+} // extern "C"
+#endif
 
+#endif /* HAVE_NETCDF */
+
+#endif	/* PHP_NETCDF_H */
 
 /*
  * Local variables:

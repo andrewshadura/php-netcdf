@@ -29,9 +29,6 @@ it under the terms of either:
 #include "config.h"
 #endif
 
-#include "php.h"
-#include "php_ini.h"
-#include "ext/standard/info.h"
 #include "php_netcdf.h"
 
 /* If you declare any globals in php_netcdf.h uncomment this:
@@ -42,6 +39,9 @@ ZEND_DECLARE_MODULE_GLOBALS(netcdf)
 static int le_netcdf;
 
 static char* netcdf_types[7] = { "NC_NAT", "NC_BYTE", "NC_CHAR", "NC_SHORT", "NC_INT", "NC_FLOAT", "NC_DOUBLE" };
+
+static zend_class_entry * NetcdfDataset_entry_ptr = NULL;
+#define PHP_NETCDF_DATASET_NAME "NetcdfDataset"
 
 /* {{{ netcdf_functions[]
  *
@@ -147,10 +147,115 @@ static void php_netcdf_init_globals(zend_netcdf_globals *netcdf_globals)
 */
 /* }}} */
 
+/* {{{ proto object NetcdfDataset::__construct(string path, string mode, boolean clobber)
+   Creates a new netCDF dataset */
+PHP_METHOD(NetcdfDataset, __construct)
+{
+	zend_class_entry * _this_ce;
+	zval * _this_zval;
+
+	const char * path = NULL;
+	int path_len = 0;
+	const char * mode = "r";
+	int mode_len = 1;
+	zend_bool clobber = 1;
+
+
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s|sb", &path, &path_len, &mode, &mode_len, &clobber) == FAILURE) {
+		return;
+	}
+
+	_this_zval = getThis();
+	_this_ce = Z_OBJCE_P(_this_zval);
+
+
+	do {
+		int grpid, ierr, numgrps, numdims, numvars, modeok = 0;
+		if (!strcmp(mode, "w"))
+		{
+			if (clobber)
+				ierr = nc_create(path, NC_CLOBBER, &grpid);
+			else
+				ierr = nc_create(path, NC_NOCLOBBER, &grpid);
+			modeok = 1;
+		}
+		if (!strcmp(mode, "r"))
+		{
+			ierr = nc_open(path, NC_NOWRITE, &grpid);
+			modeok = 1;
+		}
+		if ((!strcmp(mode, "r")) || (!strcmp(mode, "a")))
+		{
+			ierr = nc_open(path, NC_WRITE, &grpid);
+			modeok = 1;
+		}
+		if ((!strcmp(mode, "r+s")) || (!strcmp(mode, "as")))
+		{
+			ierr = nc_open(path, NC_SHARE, &grpid);
+			modeok = 1;
+		}
+		if (!strcmp(mode, "ws"))
+		{
+			if (clobber)
+				ierr = nc_create(path, NC_SHARE | NC_CLOBBER, &grpid);
+			else
+				ierr = nc_create(path, NC_SHARE | NC_NOCLOBBER, &grpid);
+			modeok = 1;
+		}
+		if (!modeok)
+    {
+			zend_error(E_ERROR, "mode must be 'w', 'r', 'a' or 'r+')");
+      RETURN_FALSE;
+    }
+		if (ierr != NC_NOERR)
+    {
+			zend_error(E_ERROR, nc_strerror(ierr));
+      RETURN_FALSE;
+    }
+		add_property_long(getThis(), "_grpid", grpid);
+		add_property_string(getThis(), "path", "/", 1);
+		add_property_string(getThis(), "filename", path, 1);
+	} while (0);
+}
+/* }}} NetcdfDataset::__construct */
+
+/* {{{ proto void NetcdfDataset::close(void)
+   */
+PHP_METHOD(NetcdfDataset, close)
+{
+  zend_class_entry * _this_ce;
+
+  zval * _this_zval = NULL;
+
+  int ierr;
+
+  if (zend_parse_method_parameters(ZEND_NUM_ARGS() TSRMLS_CC, getThis(), "O", &_this_zval, NetcdfDataset_entry_ptr) == FAILURE) {
+    return;
+  }
+
+  _this_ce = Z_OBJCE_P(_this_zval);
+
+  ierr = nc_close(PROP_GET_LONG(_grpid));
+  if (ierr != NC_NOERR)
+  {
+    zend_error(E_ERROR, nc_strerror(ierr));
+    RETURN_FALSE;
+  }
+}
+/* }}} NetcdfDataset::close */
+
+static function_entry php_netcdf_dataset_functions[] = {
+	PHP_ME(NetcdfDataset, __construct, NetcdfDataset____construct_args, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
+	PHP_ME(NetcdfDataset, close, NetcdfDataset__close_args, ZEND_ACC_PUBLIC)
+	{ NULL, NULL, NULL }
+};
+
 /* {{{ PHP_MINIT_FUNCTION
  */
 PHP_MINIT_FUNCTION(netcdf)
 {
+  zend_class_entry ce;
 	/* If you have INI entries, uncomment these lines 
 	REGISTER_INI_ENTRIES();
 	*/
@@ -203,6 +308,9 @@ PHP_MINIT_FUNCTION(netcdf)
 	REGISTER_LONG_CONSTANT("NC_ENOMEM", NC_ENOMEM, CONST_CS | CONST_PERSISTENT);
 	REGISTER_LONG_CONSTANT("NC_LONG", NC_LONG, CONST_CS | CONST_PERSISTENT);
 	REGISTER_LONG_CONSTANT("NC_ENTOOL", NC_ENTOOL, CONST_CS | CONST_PERSISTENT);
+
+	INIT_CLASS_ENTRY(ce, PHP_NETCDF_DATASET_NAME, php_netcdf_dataset_functions);
+	NetcdfDataset_entry_ptr = zend_register_internal_class(&ce TSRMLS_CC);
 	return SUCCESS;
 }
 /* }}} */
@@ -252,6 +360,7 @@ PHP_MINFO_FUNCTION(netcdf)
 	*/
 }
 /* }}} */
+
 
 
 /* {{{ proto int nc_create(string path, int cmode, int &ncid)

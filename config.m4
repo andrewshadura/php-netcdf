@@ -57,28 +57,28 @@ if test "$PHP_NETCDF" != "no"; then
   dnl
   if test -z "$NETCDF_LIB_DIR"; then
     AC_MSG_RESULT([not found])
-    AC_MSG_ERROR([Please check the netcdf distribution])
+    AC_MSG_ERROR([Please check the netCDF distribution])
   fi
   # --with-netcdf -> add include path
   PHP_ADD_INCLUDE($NETCDF_INC_DIR)
 
   # --with-netcdf -> check for lib and symbol presence
   LIBNAME=netcdf # you may want to change this
-  O_LDFLAGS=$LDFLAGS
-  LDFLAGS="$LDFLAGS -L$NETCDF_LIB_DIR -l$LIBNAME"
-  #PHP_ADD_LIBRARY($LIBNAME)
-  dnl LIBSYMBOL=nc_open # you most likely want to change this 
+  dnl O_LDFLAGS=$LDFLAGS
+  dnl LDFLAGS="$LDFLAGS -L$NETCDF_LIB_DIR -l$LIBNAME"
+  PHP_ADD_LIBRARY($LIBNAME)
+  LIBSYMBOL=nc_inq_libvers # you most likely want to change this 
 
-  dnl PHP_CHECK_LIBRARY($LIBNAME,$LIBSYMBOL,
-  dnl [
-  dnl   PHP_ADD_LIBRARY($LIBNAME)
-  dnl AC_DEFINE(HAVE_NETCDFLIB,1,[ ])
-  dnl ],[
-  dnl AC_MSG_ERROR([wrong netcdf lib version or lib not found])
-  dnl ]
-  dnl ])
+  PHP_CHECK_LIBRARY($LIBNAME,$LIBSYMBOL,
+  [
+    PHP_ADD_LIBRARY($LIBNAME)
+      AC_DEFINE(HAVE_NETCDF,1,[Build netCDF extension])
+  ],[
+      AC_MSG_ERROR([wrong netCDF library version or lib not found])
+  ])
   
-  dnl PHP_SUBST(NETCDF_SHARED_LIBADD)
+  PHP_SUBST(NETCDF_SHARED_LIBADD)
+  NETCDF_SHARED_LIBADD=-l$LIBNAME
 
   PHP_NEW_EXTENSION(netcdf, netcdf.c, $ext_shared)
 fi
