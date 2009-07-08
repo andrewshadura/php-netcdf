@@ -160,8 +160,6 @@ PHP_METHOD(NetcdfDataset, __construct)
 	int mode_len = 1;
 	zend_bool clobber = 1;
 
-
-
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s|sb", &path, &path_len, &mode, &mode_len, &clobber) == FAILURE) {
 		return;
 	}
@@ -224,24 +222,24 @@ PHP_METHOD(NetcdfDataset, __construct)
    */
 PHP_METHOD(NetcdfDataset, close)
 {
-  zend_class_entry * _this_ce;
+	zend_class_entry * _this_ce;
 
-  zval * _this_zval = NULL;
+	zval * _this_zval = NULL;
 
-  int ierr;
+	int ierr;
 
-  if (zend_parse_method_parameters(ZEND_NUM_ARGS() TSRMLS_CC, getThis(), "O", &_this_zval, NetcdfDataset_entry_ptr) == FAILURE) {
-    return;
-  }
+	if (zend_parse_method_parameters(ZEND_NUM_ARGS() TSRMLS_CC, getThis(), "O", &_this_zval, NetcdfDataset_entry_ptr) == FAILURE) {
+		return;
+	}
 
-  _this_ce = Z_OBJCE_P(_this_zval);
+	_this_ce = Z_OBJCE_P(_this_zval);
 
-  ierr = nc_close(PROP_GET_LONG(_grpid));
-  if (ierr != NC_NOERR)
-  {
-    zend_error(E_ERROR, nc_strerror(ierr));
-    RETURN_FALSE;
-  }
+	ierr = nc_close(PROP_GET_LONG(_grpid));
+	if (ierr != NC_NOERR)
+	{
+		zend_error(E_ERROR, nc_strerror(ierr));
+		RETURN_FALSE;
+	}
 }
 /* }}} NetcdfDataset::close */
 
