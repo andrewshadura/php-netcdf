@@ -97,6 +97,30 @@ ZEND_END_ARG_INFO()
 #define NetcdfDataset__close_args NULL
 #endif
 
+PHP_METHOD(NetcdfDataset, sync);
+#if (PHP_MAJOR_VERSION >= 5)
+ZEND_BEGIN_ARG_INFO_EX(NetcdfDataset__sync_args, ZEND_SEND_BY_VAL, ZEND_RETURN_VALUE, 0)
+ZEND_END_ARG_INFO()
+#else /* PHP 4.x */
+#define NetcdfDataset__sync_args NULL
+#endif
+
+PHP_METHOD(NetcdfDataset, _redef);
+#if (PHP_MAJOR_VERSION >= 5)
+ZEND_BEGIN_ARG_INFO_EX(NetcdfDataset___redef_args, ZEND_SEND_BY_VAL, ZEND_RETURN_VALUE, 0)
+ZEND_END_ARG_INFO()
+#else /* PHP 4.x */
+#define NetcdfDataset___redef_args NULL
+#endif
+
+PHP_METHOD(NetcdfDataset, _enddef);
+#if (PHP_MAJOR_VERSION >= 5)
+ZEND_BEGIN_ARG_INFO_EX(NetcdfDataset___enddef_args, ZEND_SEND_BY_VAL, ZEND_RETURN_VALUE, 0)
+ZEND_END_ARG_INFO()
+#else /* PHP 4.x */
+#define NetcdfDataset___enddef_args NULL
+#endif
+
 PHP_FUNCTION(nc_strerror);
 
 PHP_FUNCTION(nc_inq_libvers);

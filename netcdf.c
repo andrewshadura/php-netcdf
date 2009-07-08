@@ -219,7 +219,7 @@ PHP_METHOD(NetcdfDataset, __construct)
 /* }}} NetcdfDataset::__construct */
 
 /* {{{ proto void NetcdfDataset::close(void)
-   */
+   Closes the dataset */
 PHP_METHOD(NetcdfDataset, close)
 {
 	zend_class_entry * _this_ce;
@@ -243,9 +243,87 @@ PHP_METHOD(NetcdfDataset, close)
 }
 /* }}} NetcdfDataset::close */
 
+/* {{{ proto void NetcdfDataset::sync(void)
+   Writes all buffered data in the dataset to the disk file */
+PHP_METHOD(NetcdfDataset, sync)
+{
+	zend_class_entry * _this_ce;
+
+	zval * _this_zval = NULL;
+
+	int ierr;
+
+	if (zend_parse_method_parameters(ZEND_NUM_ARGS() TSRMLS_CC, getThis(), "O", &_this_zval, NetcdfDataset_entry_ptr) == FAILURE) {
+		return;
+	}
+
+	_this_ce = Z_OBJCE_P(_this_zval);
+
+	ierr = nc_sync(PROP_GET_LONG(_grpid));
+	if (ierr != NC_NOERR)
+	{
+		zend_error(E_ERROR, nc_strerror(ierr));
+		RETURN_FALSE;
+	}
+}
+/* }}} NetcdfDataset::sync */
+
+/* {{{ proto void NetcdfDataset::_redef(void)
+   */
+PHP_METHOD(NetcdfDataset, _redef)
+{
+	zend_class_entry * _this_ce;
+
+	zval * _this_zval = NULL;
+
+	int ierr;
+
+	if (zend_parse_method_parameters(ZEND_NUM_ARGS() TSRMLS_CC, getThis(), "O", &_this_zval, NetcdfDataset_entry_ptr) == FAILURE) {
+		return;
+	}
+
+	_this_ce = Z_OBJCE_P(_this_zval);
+
+	ierr = nc_redef(PROP_GET_LONG(_grpid));
+	if (ierr != NC_NOERR)
+	{
+		zend_error(E_ERROR, nc_strerror(ierr));
+		RETURN_FALSE;
+	}
+}
+/* }}} NetcdfDataset::_redef */
+
+/* {{{ proto void NetcdfDataset::_enddef(void)
+   */
+PHP_METHOD(NetcdfDataset, _enddef)
+{
+	zend_class_entry * _this_ce;
+
+	zval * _this_zval = NULL;
+
+	int ierr;
+
+	if (zend_parse_method_parameters(ZEND_NUM_ARGS() TSRMLS_CC, getThis(), "O", &_this_zval, NetcdfDataset_entry_ptr) == FAILURE) {
+		return;
+	}
+
+	_this_ce = Z_OBJCE_P(_this_zval);
+
+	ierr = nc_enddef(PROP_GET_LONG(_grpid));
+	if (ierr != NC_NOERR)
+	{
+		zend_error(E_ERROR, nc_strerror(ierr));
+		RETURN_FALSE;
+	}
+}
+/* }}} NetcdfDataset::_enddef */
+
 static function_entry php_netcdf_dataset_functions[] = {
 	PHP_ME(NetcdfDataset, __construct, NetcdfDataset____construct_args, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
 	PHP_ME(NetcdfDataset, close, NetcdfDataset__close_args, ZEND_ACC_PUBLIC)
+	PHP_ME(NetcdfDataset, sync, NetcdfDataset__sync_args, ZEND_ACC_PUBLIC)
+	PHP_ME(NetcdfDataset, _redef, NetcdfDataset___redef_args, ZEND_ACC_PUBLIC)
+	PHP_ME(NetcdfDataset, _enddef, NetcdfDataset___enddef_args, ZEND_ACC_PUBLIC)
 	{ NULL, NULL, NULL }
 };
 
