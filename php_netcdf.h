@@ -190,12 +190,12 @@ PHP_FUNCTION(nc_dump_header);
 PHP_FUNCTION(nc_get_values);
 
 /* 
-  	Declare any global variables you may need between the BEGIN
-	and END macros here:     
+      Declare any global variables you may need between the BEGIN
+    and END macros here:     
 
 ZEND_BEGIN_MODULE_GLOBALS(netcdf)
-	long  global_value;
-	char *global_string;
+    long  global_value;
+    char *global_string;
 ZEND_END_MODULE_GLOBALS(netcdf)
 */
 
@@ -221,7 +221,7 @@ ZEND_END_MODULE_GLOBALS(netcdf)
 
 #endif /* HAVE_NETCDF */
 
-#endif	/* PHP_NETCDF_H */
+#endif    /* PHP_NETCDF_H */
 
 /*
  * Local variables:
