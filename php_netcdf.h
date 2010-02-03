@@ -25,6 +25,12 @@ it under the terms of either:
 
 /* $Id$ */
 
+#ifdef NC_FORMAT_NETCDF4
+#define CONFIG_NETCDF_4
+#else
+#define CONFIG_NETCDF_3
+#endif
+
 #ifndef PHP_NETCDF_H
 #define PHP_NETCDF_H
 
@@ -163,8 +169,13 @@ PHP_FUNCTION(nc_inq_vardimid);
 PHP_FUNCTION(nc_inq_varnatts);
 
 PHP_FUNCTION(nc_inq_attname);
+PHP_FUNCTION(nc_inq_attname);
 
-PHP_FUNCTION(nc_get_var1_float);
+PHP_FUNCTION(nc_get_att);
+PHP_FUNCTION(nc_get_var1);
+PHP_FUNCTION(nc_get_var);
+PHP_FUNCTION(nc_get_vara);
+PHP_FUNCTION(nc_get_vars);
 
 PHP_FUNCTION(nc_put_var_text);
 PHP_FUNCTION(nc_put_var_uchar);
@@ -174,6 +185,9 @@ PHP_FUNCTION(nc_put_var_int);
 PHP_FUNCTION(nc_put_var_long);
 PHP_FUNCTION(nc_put_var_float);
 PHP_FUNCTION(nc_put_var_double);
+
+PHP_FUNCTION(nc_dump_header);
+PHP_FUNCTION(nc_get_values);
 
 /* 
   	Declare any global variables you may need between the BEGIN
