@@ -99,23 +99,26 @@ void assign_zval(nc_type at_type, size_t at_len, void *value, zval *zvalue) {
     }
 
     array_init(zvalue);
-    for(i=0; i<at_len; i++)
-        switch(at_type) {
+    for(i = 0; i < at_len; i++)
+    {
+        switch(at_type)
+        {
             case NC_BYTE:
-                add_index_long(zvalue, i, *(((char *)value)+i));
+                add_index_long(zvalue, i, *(((char *)value) + i));
                 break;
             case NC_SHORT:
-                add_index_long(zvalue, i, *(((short *)value)+i));
+                add_index_long(zvalue, i, *(((short *)value) + i));
                 break;
             case NC_INT:
-                add_index_long(zvalue, i, *(((int *)value)+i));
+                add_index_long(zvalue, i, *(((int *)value) + i));
                 break;
             case NC_FLOAT:
-                add_index_double(zvalue, i, *(((float *)value)+i));
+                add_index_double(zvalue, i, *(((float *)value) + i));
                 break;
             case NC_DOUBLE:
-                add_index_double(zvalue, i, *(((double *)value)+i));
+                add_index_double(zvalue, i, *(((double *)value) + i));
         }
+    }
 }
 
 int assign_value(nc_type at_type, size_t at_len, zval *zvalue, void *value){
@@ -162,7 +165,8 @@ int assign_value(nc_type at_type, size_t at_len, zval *zvalue, void *value){
         (i < at_len) && (zend_hash_get_current_data_ex(arr_hash, (void**) &data, &pointer) == SUCCESS);
         zend_hash_move_forward_ex(arr_hash, &pointer), i++)
     {
-       switch(at_type){
+       switch(at_type)
+       {
             case NC_BYTE:
                 *(((char *)value) + i) = Z_LVAL_PP(data);
                 break;
@@ -214,7 +218,8 @@ int nc_put_var(int ncid, int  varid,void *values)
 
     result = nc_inq_vartype(ncid, varid, &xtype);
     if (result != NC_NOERR) return result;
-    switch(xtype){
+    switch(xtype)
+    {
         case NC_CHAR:
             return nc_put_var_text(ncid, varid, (char *) values);
         case NC_BYTE:
@@ -530,7 +535,7 @@ static function_entry php_netcdf_dataset_functions[] = {
 PHP_MINIT_FUNCTION(netcdf)
 {
   zend_class_entry ce;
-    /* If you have INI entries, uncomment these lines 
+    /* If you have INI entries, uncomment these lines
     REGISTER_INI_ENTRIES();
     */
     REGISTER_LONG_CONSTANT("NC_NAT", NC_NAT, CONST_CS | CONST_PERSISTENT);
@@ -646,7 +651,8 @@ PHP_FUNCTION(nc_create)
     int ncid;
     zval *zncid;
 
-    if ((ZEND_NUM_ARGS() != 3) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "slz", &path, &path_len, &cmode, &zncid) != SUCCESS)) {
+    if ((ZEND_NUM_ARGS() != 3) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "slz", &path, &path_len, &cmode, &zncid) != SUCCESS))
+    {
         WRONG_PARAM_COUNT;
     }
 
@@ -657,7 +663,7 @@ PHP_FUNCTION(nc_create)
         RETURN_NULL();
     }
 
-    result=nc_create(path, cmode, &ncid);
+    result = nc_create(path, cmode, &ncid);
     ZVAL_LONG(zncid, ncid);
 
     RETURN_LONG(result);
@@ -673,7 +679,8 @@ PHP_FUNCTION(nc_open)
     int ncid;
     zval *zncid;
 
-    if ((ZEND_NUM_ARGS() != 3) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "slz", &path, &path_len, &mode, &zncid) != SUCCESS)) {
+    if ((ZEND_NUM_ARGS() != 3) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "slz", &path, &path_len, &mode, &zncid) != SUCCESS))
+    {
         WRONG_PARAM_COUNT;
     }
 
@@ -684,7 +691,7 @@ PHP_FUNCTION(nc_open)
         RETURN_NULL();
     }
 
-    result=nc_open(path, mode, &ncid);
+    result = nc_open(path, mode, &ncid);
     ZVAL_LONG(zncid, ncid);
 
     RETURN_LONG(result);
@@ -697,11 +704,12 @@ PHP_FUNCTION(nc_redef)
 {
     long ncid, result;
 
-    if ((ZEND_NUM_ARGS() != 1) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l", &ncid) != SUCCESS)) {
+    if ((ZEND_NUM_ARGS() != 1) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l", &ncid) != SUCCESS))
+    {
         WRONG_PARAM_COUNT;
     }
 
-    result=nc_redef(ncid);
+    result = nc_redef(ncid);
 
     RETURN_LONG(result);
 }
@@ -713,11 +721,12 @@ PHP_FUNCTION(nc_enddef)
 {
     long ncid, result;
 
-    if ((ZEND_NUM_ARGS() != 1) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l", &ncid) != SUCCESS)) {
+    if ((ZEND_NUM_ARGS() != 1) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l", &ncid) != SUCCESS))
+    {
         WRONG_PARAM_COUNT;
     }
 
-    result=nc_enddef(ncid);
+    result = nc_enddef(ncid);
 
     RETURN_LONG(result);
 }
@@ -729,11 +738,12 @@ PHP_FUNCTION(nc_close)
 {
     long ncid, result;
 
-    if ((ZEND_NUM_ARGS() != 1) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l", &ncid) != SUCCESS)) {
+    if ((ZEND_NUM_ARGS() != 1) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l", &ncid) != SUCCESS))
+    {
         WRONG_PARAM_COUNT;
     }
 
-    result=nc_close(ncid);
+    result = nc_close(ncid);
 
     RETURN_LONG(result);
 }
@@ -747,11 +757,12 @@ PHP_FUNCTION(nc_inq)
     int ndims, nvars, ngatts, unlimdimid;
     zval *zndims, *znvars, *zngatts, *zunlimdimid;
 
-    if ((ZEND_NUM_ARGS() != 5) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "lzzzz", &ncid, &zndims, &znvars, &zngatts, &zunlimdimid) != SUCCESS)) {
+    if ((ZEND_NUM_ARGS() != 5) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "lzzzz", &ncid, &zndims, &znvars, &zngatts, &zunlimdimid) != SUCCESS))
+    {
         WRONG_PARAM_COUNT;
     }
 
-    result=nc_inq(ncid, &ndims, &nvars, &ngatts, &unlimdimid);
+    result = nc_inq(ncid, &ndims, &nvars, &ngatts, &unlimdimid);
     ZVAL_LONG(zndims, ndims);
     ZVAL_LONG(znvars, nvars);
     ZVAL_LONG(zngatts, ngatts);
@@ -769,11 +780,12 @@ PHP_FUNCTION(nc_inq_ndims)
     int ndims;
     zval *zndims;
 
-    if ((ZEND_NUM_ARGS() != 2) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "lz", &ncid, &zndims) != SUCCESS)) {
+    if ((ZEND_NUM_ARGS() != 2) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "lz", &ncid, &zndims) != SUCCESS))
+    {
         WRONG_PARAM_COUNT;
     }
 
-    result=nc_inq_ndims(ncid, &ndims);
+    result = nc_inq_ndims(ncid, &ndims);
     ZVAL_LONG(zndims, ndims);
 
     RETURN_LONG(result);
@@ -788,11 +800,12 @@ PHP_FUNCTION(nc_inq_nvars)
     int nvars;
     zval *znvars;
 
-    if ((ZEND_NUM_ARGS() != 2) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "lz", &ncid, &znvars) != SUCCESS)) {
+    if ((ZEND_NUM_ARGS() != 2) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "lz", &ncid, &znvars) != SUCCESS))
+    {
         WRONG_PARAM_COUNT;
     }
 
-    result=nc_inq_nvars(ncid, &nvars);
+    result = nc_inq_nvars(ncid, &nvars);
     ZVAL_LONG(znvars, nvars);
 
     RETURN_LONG(result);
@@ -811,7 +824,7 @@ PHP_FUNCTION(nc_inq_natts)
         WRONG_PARAM_COUNT;
     }
 
-    result=nc_inq_natts(ncid, &ngatts);
+    result = nc_inq_natts(ncid, &ngatts);
     ZVAL_LONG(zngatts, ngatts);
 
     RETURN_LONG(result);
@@ -826,11 +839,12 @@ PHP_FUNCTION(nc_inq_unlimdim)
     int unlimdimid;
     zval *zunlimdimid;
 
-    if ((ZEND_NUM_ARGS() != 2) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "lz", &ncid, &zunlimdimid) != SUCCESS)) {
+    if ((ZEND_NUM_ARGS() != 2) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "lz", &ncid, &zunlimdimid) != SUCCESS))
+    {
         WRONG_PARAM_COUNT;
     }
 
-    result=nc_inq_unlimdim(ncid, &unlimdimid);
+    result = nc_inq_unlimdim(ncid, &unlimdimid);
     ZVAL_LONG(zunlimdimid, unlimdimid);
 
     RETURN_LONG(result);
@@ -843,11 +857,12 @@ PHP_FUNCTION(nc_sync)
 {
     long ncid, result;
 
-    if ((ZEND_NUM_ARGS() != 1) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l", &ncid) != SUCCESS)) {
+    if ((ZEND_NUM_ARGS() != 1) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l", &ncid) != SUCCESS))
+    {
         WRONG_PARAM_COUNT;
     }
 
-    result=nc_sync(ncid);
+    result = nc_sync(ncid);
 
     RETURN_LONG(result);
 }
@@ -859,11 +874,12 @@ PHP_FUNCTION(nc_abort)
 {
     long ncid, result;
 
-    if ((ZEND_NUM_ARGS() != 1) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l", &ncid) != SUCCESS)) {
+    if ((ZEND_NUM_ARGS() != 1) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l", &ncid) != SUCCESS))
+    {
         WRONG_PARAM_COUNT;
     }
 
-    result=nc_abort(ncid);
+    result = nc_abort(ncid);
 
     RETURN_LONG(result);
 }
@@ -877,11 +893,12 @@ PHP_FUNCTION(nc_set_fill)
     int old_mode;
     zval *zold_mode;
 
-    if ((ZEND_NUM_ARGS() != 3) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "llz", &ncid, &fillmode, &zold_mode) != SUCCESS)) {
+    if ((ZEND_NUM_ARGS() != 3) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "llz", &ncid, &fillmode, &zold_mode) != SUCCESS))
+    {
         WRONG_PARAM_COUNT;
     }
 
-    result=nc_set_fill(ncid, fillmode, &old_mode);
+    result = nc_set_fill(ncid, fillmode, &old_mode);
     ZVAL_LONG(zold_mode, old_mode);
 
     RETURN_LONG(result);
@@ -897,11 +914,12 @@ PHP_FUNCTION(nc_def_dim)
     char *name = NULL;
     zval *zdimid;
 
-    if ((ZEND_NUM_ARGS() != 4) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "lslz", &ncid, &name, &namelen, &len, &zdimid) != SUCCESS)) {
+    if ((ZEND_NUM_ARGS() != 4) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "lslz", &ncid, &name, &namelen, &len, &zdimid) != SUCCESS))
+    {
         WRONG_PARAM_COUNT;
     }
 
-    result=nc_def_dim(ncid, name, len, &dimid);
+    result = nc_def_dim(ncid, name, len, &dimid);
     ZVAL_LONG(zdimid, dimid);
 
     RETURN_LONG(result);
@@ -917,11 +935,12 @@ PHP_FUNCTION(nc_inq_dimid)
     char *name = NULL;
     zval *zdimid;
 
-    if ((ZEND_NUM_ARGS() != 3) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "lsz", &ncid, &name, &namelen, &zdimid) != SUCCESS)) {
+    if ((ZEND_NUM_ARGS() != 3) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "lsz", &ncid, &name, &namelen, &zdimid) != SUCCESS))
+    {
         WRONG_PARAM_COUNT;
     }
 
-    result=nc_inq_dimid(ncid, name, &dimid);
+    result = nc_inq_dimid(ncid, name, &dimid);
     ZVAL_LONG(zdimid, dimid);
 
     RETURN_LONG(result);
@@ -938,11 +957,12 @@ PHP_FUNCTION(nc_inq_dim)
     char name[NC_MAX_NAME];
     zval *zname, *zlength;
 
-    if ((ZEND_NUM_ARGS() != 4) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "llzz", &ncid, &dimid, &zname, &zlength) != SUCCESS)) {
+    if ((ZEND_NUM_ARGS() != 4) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "llzz", &ncid, &dimid, &zname, &zlength) != SUCCESS))
+    {
         WRONG_PARAM_COUNT;
     }
 
-    result=nc_inq_dim(ncid, dimid, name, &length);
+    result = nc_inq_dim(ncid, dimid, name, &length);
     ZVAL_STRING(zname, name, 1);
     ZVAL_LONG(zlength, length);
 
@@ -959,11 +979,12 @@ PHP_FUNCTION(nc_inq_dimname)
     char name[NC_MAX_NAME];
     zval *zname;
 
-    if ((ZEND_NUM_ARGS() != 3) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "llz", &ncid, &dimid, &zname) != SUCCESS)) {
+    if ((ZEND_NUM_ARGS() != 3) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "llz", &ncid, &dimid, &zname) != SUCCESS))
+    {
         WRONG_PARAM_COUNT;
     }
 
-    result=nc_inq_dimname(ncid, dimid, name);
+    result = nc_inq_dimname(ncid, dimid, name);
     ZVAL_STRING(zname, name, 1);
 
     RETURN_LONG(result);
@@ -979,11 +1000,12 @@ PHP_FUNCTION(nc_inq_dimlen)
     int length;
     zval *zlength;
 
-    if ((ZEND_NUM_ARGS() != 3) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "llz", &ncid, &dimid, &zlength) != SUCCESS)) {
+    if ((ZEND_NUM_ARGS() != 3) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "llz", &ncid, &dimid, &zlength) != SUCCESS))
+    {
         WRONG_PARAM_COUNT;
     }
 
-    result=nc_inq_dimlen(ncid, dimid, &length);
+    result = nc_inq_dimlen(ncid, dimid, &length);
     ZVAL_LONG(zlength, length);
 
     RETURN_LONG(result);
@@ -997,11 +1019,12 @@ PHP_FUNCTION(nc_rename_dim)
     long ncid, dimid, namelen, result;
     char *name = NULL;
 
-    if ((ZEND_NUM_ARGS() != 3) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "lls", &ncid, &dimid, &name, &namelen) != SUCCESS)) {
+    if ((ZEND_NUM_ARGS() != 3) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "lls", &ncid, &dimid, &name, &namelen) != SUCCESS))
+    {
         WRONG_PARAM_COUNT;
     }
 
-    result=nc_rename_dim(ncid, dimid, name);
+    result = nc_rename_dim(ncid, dimid, name);
 
     RETURN_LONG(result);
 }
@@ -1023,20 +1046,23 @@ PHP_FUNCTION(nc_def_var)
     HashTable *arr_hash;
     HashPosition pointer;
 
-    if ((ZEND_NUM_ARGS() != 6) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "lsllaz", &ncid, &name, &namelen, &xtype, &ndims, &zdimids, &zvarid) != SUCCESS)) {
+    if ((ZEND_NUM_ARGS() != 6) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC,
+        "lsllaz", &ncid, &name, &namelen, &xtype, &ndims, &zdimids, &zvarid) != SUCCESS))
+    {
         WRONG_PARAM_COUNT;
     }
 
     arr_hash = Z_ARRVAL_P(zdimids);
-    for (zend_hash_internal_pointer_reset_ex(arr_hash, &pointer); (i<ndims) && (zend_hash_get_current_data_ex(arr_hash, (void**) &data, &pointer) == SUCCESS); i++)
+    for (zend_hash_internal_pointer_reset_ex(arr_hash, &pointer);
+        (i<ndims) && (zend_hash_get_current_data_ex(arr_hash, (void**) &data, &pointer) == SUCCESS); i++)
     {
         if (Z_TYPE_PP(data) == IS_LONG)
         {
-            dimids[i]=Z_LVAL_PP(data);
+            dimids[i] = Z_LVAL_PP(data);
         }
         zend_hash_move_forward_ex(arr_hash, &pointer);
     }
-    result=nc_def_var(ncid, name, xtype, ndims, dimids, &varid);
+    result = nc_def_var(ncid, name, xtype, ndims, dimids, &varid);
     ZVAL_LONG(zvarid, varid);
 
     RETURN_LONG(result);
@@ -1053,16 +1079,20 @@ PHP_FUNCTION(nc_inq_var)
     nc_type xtype;
     zval *zname, *zxtype, *zndims, *zdimids, *znattsp;
 
-    if ((ZEND_NUM_ARGS() != 7) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "llzzzzz", 
+    if ((ZEND_NUM_ARGS() != 7) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "llzzzzz",
         &ncid, &varid, &zname, &zxtype, &zndims, &zdimids, &znattsp) != SUCCESS))
+    {
         WRONG_PARAM_COUNT;
+    }
 
     result = nc_inq_var(ncid, varid, name, &xtype, &ndims, dimids, &nattsp);
-       if (result != NC_NOERR) RETURN_NETCDF_ERROR("nc_inq_var: error getting the var information",result);
+    if (result != NC_NOERR) RETURN_NETCDF_ERROR("nc_inq_var: error getting the var information",result);
 
     array_init(zdimids);
-    for(i=0; i<ndims; i++)
+    for(i = 0; i < ndims; i++)
+    {
         add_index_long(zdimids, i, dimids[i]);
+    }
 
     ZVAL_STRING(zname, name, 1);
     ZVAL_LONG(zxtype, xtype);
@@ -1083,9 +1113,11 @@ PHP_FUNCTION(nc_inq_varid)
     zval *zvarid;
 
     if ((ZEND_NUM_ARGS() != 3) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "lsz", &ncid, &name, &namelen, &zvarid) != SUCCESS))
+    {
         WRONG_PARAM_COUNT;
+    }
 
-    result=nc_inq_varid(ncid, name, &varid);
+    result = nc_inq_varid(ncid, name, &varid);
     ZVAL_LONG(zvarid, varid);
 
     RETURN_LONG(result);
@@ -1102,9 +1134,11 @@ PHP_FUNCTION(nc_inq_varname)
     zval *zname;
 
     if ((ZEND_NUM_ARGS() != 3) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "llz", &ncid, &varid, &zname) != SUCCESS))
+    {
         WRONG_PARAM_COUNT;
+    }
 
-    result=nc_inq_varname(ncid, varid, name);
+    result = nc_inq_varname(ncid, varid, name);
     ZVAL_STRING(zname, name, 1);
 
     RETURN_LONG(result);
@@ -1120,9 +1154,11 @@ PHP_FUNCTION(nc_inq_vartype)
     zval *zxtype;
 
     if ((ZEND_NUM_ARGS() != 3) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "llz", &ncid, &varid, &zxtype) != SUCCESS))
+    {
         WRONG_PARAM_COUNT;
+    }
 
-    result=nc_inq_vartype(ncid, varid, &xtype);
+    result = nc_inq_vartype(ncid, varid, &xtype);
     ZVAL_LONG(zxtype, xtype);
 
     RETURN_LONG(result);
@@ -1138,9 +1174,11 @@ PHP_FUNCTION(nc_inq_varndims)
     zval *zndims;
 
     if ((ZEND_NUM_ARGS() != 3) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "llz", &ncid, &varid, &zndims) != SUCCESS))
+    {
         WRONG_PARAM_COUNT;
+    }
 
-    result=nc_inq_varndims(ncid, varid, &ndims);
+    result = nc_inq_varndims(ncid, varid, &ndims);
     ZVAL_LONG(zndims, ndims);
 
     RETURN_LONG(result);
@@ -1156,11 +1194,13 @@ PHP_FUNCTION(nc_inq_vardimid)
     zval *zdimids;
 
     if ((ZEND_NUM_ARGS() != 3) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "llz", &ncid, &varid, &zdimids) != SUCCESS))
+    {
         WRONG_PARAM_COUNT;
+    }
 
     result = nc_inq_varndims(ncid, varid, &ndims);
-    if (result != NC_NOERR) RETURN_NETCDF_ERROR("nc_inq_vardimid: error getting the number of dimensions",result);
-    
+    if (result != NC_NOERR) RETURN_NETCDF_ERROR("nc_inq_vardimid: error getting the number of dimensions", result);
+
     dimids = (int*)emalloc(ndims * sizeof (int));
     if (dimids == NULL) RETURN_ERROR("nc_inq_vardimid: error allocating memory to get the number of dimensions");
 
@@ -1168,8 +1208,10 @@ PHP_FUNCTION(nc_inq_vardimid)
     if (result != NC_NOERR) RETURN_NETCDF_ERROR("nc_inq_vardimid: error getting the number of dimensions",result);
 
     array_init(zdimids);
-    for(i=0; i<ndims; i++)
+    for (i = 0; i < ndims; i++)
+    {
         add_index_long(zdimids, i, dimids[i]);
+    }
 
     efree(dimids);
     RETURN_LONG(result);
@@ -1179,14 +1221,16 @@ PHP_FUNCTION(nc_inq_vardimid)
 /* {{{ proto int nc_inq_varnatts(int ncid, int varid, int *nattsp); */
 PHP_FUNCTION(nc_inq_varnatts)
 {
-     long ncid, varid, result;
+    long ncid, varid, result;
     int nattsp;
     zval *znattsp;
 
     if ((ZEND_NUM_ARGS() != 3) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "llz", &ncid, &varid, &znattsp) != SUCCESS))
+    {
         WRONG_PARAM_COUNT;
+    }
 
-    result=nc_inq_varnatts(ncid, varid, &nattsp);
+    result = nc_inq_varnatts(ncid, varid, &nattsp);
     ZVAL_LONG(znattsp, nattsp);
 
     RETURN_LONG(result);
@@ -1203,9 +1247,11 @@ PHP_FUNCTION(nc_inq_attname)
     zval *zname;
 
     if ((ZEND_NUM_ARGS() != 4) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "lllz", &ncid, &varid, &attnum, &zname) != SUCCESS))
+    {
         WRONG_PARAM_COUNT;
+    }
 
-    result=nc_inq_attname(ncid, varid, attnum, name);
+    result = nc_inq_attname(ncid, varid, attnum, name);
     ZVAL_STRING(zname, name, 1);
 
     RETURN_LONG(result);
@@ -1225,7 +1271,9 @@ PHP_FUNCTION(nc_get_att)
     void *value = NULL;
 
     if ((ZEND_NUM_ARGS() != 4) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "llsz", &ncid, &varid, &name, &namelen, &zvalue) != SUCCESS))
+    {
         WRONG_PARAM_COUNT;
+    }
 
     result = nc_inq_att (ncid, varid, name, &at_type, &at_len);
     if (result != NC_NOERR) RETURN_NETCDF_ERROR("nc_get_att: error getting attribute information (nc_inq_att)",result);
@@ -1256,21 +1304,24 @@ PHP_FUNCTION(nc_get_var1)
     zval *zindexp, *zvalue;
     void *value = NULL;
 
-    if ((ZEND_NUM_ARGS() != 4) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "llaz", &ncid, &varid, &zindexp, &zvalue) != SUCCESS)) {
+    if ((ZEND_NUM_ARGS() != 4) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "llaz", &ncid, &varid, &zindexp, &zvalue) != SUCCESS))
+    {
         WRONG_PARAM_COUNT;
     }
 
-    result=nc_inq_varndims(ncid, varid, &ndims);
+    result = nc_inq_varndims(ncid, varid, &ndims);
     if (result != NC_NOERR) RETURN_NETCDF_ERROR("nc_get_var1: error getting variable dimension number",result);
 
-    result=nc_inq_vartype(ncid, varid, &xtype);
+    result = nc_inq_vartype(ncid, varid, &xtype);
     if (result != NC_NOERR) RETURN_NETCDF_ERROR("nc_get_var1: error getting variable type",result);
 
     indexp = (size_t*)emalloc(ndims * sizeof (size_t));
     if (indexp == NULL) RETURN_ERROR("nc_get_var1: error allocating memory to get indices");
 
     if (assign_value(NC_INT, ndims, zindexp, (void *)indexp) == 0)
+    {
         RETURN_ERROR("nc_get_var1: error reading indexp array");
+    }
 
     /* allocate required space before retrieving value */
     value = allocate_space(xtype,1);
@@ -1296,16 +1347,17 @@ PHP_FUNCTION(nc_get_var)
     zval *zvalues;
     void *values = NULL;
 
-    if ((ZEND_NUM_ARGS() != 3) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "llz", &ncid, &varid, &zvalues) != SUCCESS)) {
+    if ((ZEND_NUM_ARGS() != 3) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "llz", &ncid, &varid, &zvalues) != SUCCESS))
+    {
         WRONG_PARAM_COUNT;
     }
 
     result = nc_inq_var(ncid, varid, name, &xtype, &ndims, dimids, &nattsp);
-       if (result != NC_NOERR) RETURN_NETCDF_ERROR("nc_get_var: error getting the var information",result);
+    if (result != NC_NOERR) RETURN_NETCDF_ERROR("nc_get_var: error getting the var information", result);
 
-    for(i=0; i<ndims; i++) {
-        result=nc_inq_dimlen(ncid, dimids[i], &dim_length);
-           if (result != NC_NOERR) RETURN_NETCDF_ERROR("nc_get_var: error getting the dimension information",result);
+    for (i = 0; i < ndims; i++) {
+        result = nc_inq_dimlen(ncid, dimids[i], &dim_length);
+        if (result != NC_NOERR) RETURN_NETCDF_ERROR("nc_get_var: error getting the dimension information", result);
         var_length *= dim_length;
     }
 
@@ -1335,12 +1387,13 @@ PHP_FUNCTION(nc_get_vara)
     zval *zstart, *zcount, *zvalues;
     void *values = NULL;
 
-    if ((ZEND_NUM_ARGS() != 5) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "llaaz", &ncid, &varid, &zstart, &zcount, &zvalues) != SUCCESS)) {
+    if ((ZEND_NUM_ARGS() != 5) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "llaaz", &ncid, &varid, &zstart, &zcount, &zvalues) != SUCCESS))
+    {
         WRONG_PARAM_COUNT;
     }
 
     result = nc_inq_var(ncid, varid, name, &xtype, &ndims, dimids, &nattsp);
-       if (result != NC_NOERR) RETURN_NETCDF_ERROR("nc_get_vara: error getting the var information",result);
+    if (result != NC_NOERR) RETURN_NETCDF_ERROR("nc_get_vara: error getting the var information", result);
 
     /* reading start array */
     start = (size_t*)emalloc(ndims * sizeof (size_t));
@@ -1354,10 +1407,14 @@ PHP_FUNCTION(nc_get_vara)
     if (count == NULL) RETURN_ERROR("nc_get_vara: error allocating memory to get count");
 
     if (assign_value(NC_INT, ndims, zcount, (void *)count) == 0)
+    {
         RETURN_ERROR("nc_get_vara: error reading count array");
+    }
 
-    for(i=0; i<ndims; i++)
-        var_length *= count[i]; 
+    for (i = 0; i < ndims; i++)
+    {
+        var_length *= count[i];
+    }
 
     /* allocate required space before retrieving values */
     values = allocate_space(xtype, var_length);
@@ -1386,37 +1443,46 @@ PHP_FUNCTION(nc_get_vars)
     void *values = NULL;
 
     if ((ZEND_NUM_ARGS() != 6) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "llaaaz",
-    &ncid, &varid, &zstart, &zcount, &zstride, &zvalues) != SUCCESS)) {
+        &ncid, &varid, &zstart, &zcount, &zstride, &zvalues) != SUCCESS))
+    {
         WRONG_PARAM_COUNT;
     }
 
     result = nc_inq_var(ncid, varid, name, &xtype, &ndims, dimids, &nattsp);
-       if (result != NC_NOERR) RETURN_NETCDF_ERROR("nc_get_vars: error getting the var information",result);
+    if (result != NC_NOERR) RETURN_NETCDF_ERROR("nc_get_vars: error getting the var information", result);
 
     /* reading start array */
     start = (size_t*)emalloc(ndims * sizeof (size_t));
     if (start == NULL) RETURN_ERROR("nc_get_vars: error allocating memory to get start");
 
-    if(assign_value(NC_INT, ndims, zstart, (void *)start)==0)
+    if (assign_value(NC_INT, ndims, zstart, (void *) start) == 0)
+    {
         RETURN_ERROR("nc_get_vars: error reading start array");
+    }
 
     /* reading count array */
     count = (size_t*)emalloc(ndims * sizeof (size_t));
     if (count == NULL) RETURN_ERROR("nc_get_vars: error allocating memory to get count");
 
-    if(assign_value(NC_INT, ndims, zcount, (void *)count)==0)
+    if (assign_value(NC_INT, ndims, zcount, (void *) count) == 0)
+    {
         RETURN_ERROR("nc_get_vars: error reading count array");
+    }
 
     /* reading stride array */
     stride = (ptrdiff_t*)emalloc(ndims * sizeof (ptrdiff_t));
     if (stride == NULL) RETURN_ERROR("nc_get_vars: error allocating memory to get stride");
 
-    if(assign_value(NC_INT, ndims, zstride, (void *)stride)==0)
+    if(assign_value(NC_INT, ndims, zstride, (void *) stride) == 0)
+    {
         RETURN_ERROR("nc_get_vars: error reading stride array");
+    }
 
 
-    for(i=0; i<ndims; i++)
-        var_length *= count[i]; 
+    for (i = 0; i < ndims; i++)
+    {
+        var_length *= count[i];
+    }
 
     /* allocate required space before retrieving values */
     values = allocate_space(xtype, var_length);
@@ -1443,16 +1509,17 @@ PHP_FUNCTION(nc_put_var)
     zval *zvalues;
     void *values = NULL;
 
-    if ((ZEND_NUM_ARGS() != 3) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "lla", &ncid, &varid, &zvalues) != SUCCESS)){
+    if ((ZEND_NUM_ARGS() != 3) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "lla", &ncid, &varid, &zvalues) != SUCCESS))
+    {
         WRONG_PARAM_COUNT;
     }
 
     result = nc_inq_var(ncid, varid, name, &xtype, &ndims, dimids, &nattsp);
-    if (result != NC_NOERR) RETURN_NETCDF_ERROR("nc_put_var: error getting the var information",result);
+    if (result != NC_NOERR) RETURN_NETCDF_ERROR("nc_put_var: error getting the var information", result);
 
     for(i=0; i<ndims; i++){
         result=nc_inq_dimlen(ncid, dimids[i], &dim_length);
-           if (result != NC_NOERR) RETURN_NETCDF_ERROR("nc_put_var: error getting the dimension information",result);
+        if (result != NC_NOERR) RETURN_NETCDF_ERROR("nc_put_var: error getting the dimension information", result);
         var_length *= dim_length;
     }
 
@@ -1460,8 +1527,10 @@ PHP_FUNCTION(nc_put_var)
     values = allocate_space(xtype, var_length);
     if (values == NULL) RETURN_ERROR("nc_put_var: error allocating memory to get values");
 
-    if(assign_value(xtype, var_length, zvalues, values)==0)
+    if (assign_value(xtype, var_length, zvalues, values) == 0)
+    {
         RETURN_ERROR("nc_put_var: error reading values to write");
+    }
 
     result = nc_put_var(ncid, varid, values);
     efree(values);
@@ -1481,7 +1550,9 @@ PHP_FUNCTION(nc_put_var_text)
     void *blob = NULL;
 
     if ((ZEND_NUM_ARGS() != 3) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "lls", &ncid, &varid, &blob, &bloblen) != SUCCESS))
+    {
         return;
+    }
 
     result = nc_put_var_text(ncid, varid, blob);
 
@@ -1502,7 +1573,9 @@ PHP_FUNCTION(nc_put_var_uchar)
     void *blob = NULL;
 
     if ((ZEND_NUM_ARGS() != 3) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "lls", &ncid, &varid, &blob, &bloblen) != SUCCESS))
+    {
         return;
+    }
 
     result = nc_put_var_uchar(ncid, varid, blob);
 
@@ -1521,7 +1594,9 @@ PHP_FUNCTION(nc_put_var_schar)
     void *blob = NULL;
 
     if ((ZEND_NUM_ARGS() != 3) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "lls", &ncid, &varid, &blob, &bloblen) != SUCCESS))
+    {
         return;
+    }
 
     result = nc_put_var_schar(ncid, varid, blob);
 
@@ -1540,7 +1615,9 @@ PHP_FUNCTION(nc_put_var_short)
     void *blob = NULL;
 
     if ((ZEND_NUM_ARGS() != 3) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "lls", &ncid, &varid, &blob, &bloblen) != SUCCESS))
+    {
         return;
+    }
 
     result = nc_put_var_short(ncid, varid, blob);
 
@@ -1559,7 +1636,9 @@ PHP_FUNCTION(nc_put_var_int)
     void *blob = NULL;
 
     if ((ZEND_NUM_ARGS() != 3) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "lls", &ncid, &varid, &blob, &bloblen) != SUCCESS))
+    {
         return;
+    }
 
     result = nc_put_var_int(ncid, varid, blob);
 
@@ -1578,7 +1657,9 @@ PHP_FUNCTION(nc_put_var_long)
     void *blob = NULL;
 
     if ((ZEND_NUM_ARGS() != 3) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "lls", &ncid, &varid, &blob, &bloblen) != SUCCESS))
+    {
         return;
+    }
 
     result = nc_put_var_long(ncid, varid, blob);
 
@@ -1597,7 +1678,9 @@ PHP_FUNCTION(nc_put_var_float)
     void *blob = NULL;
 
     if ((ZEND_NUM_ARGS() != 3) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "lls", &ncid, &varid, &blob, &bloblen) != SUCCESS))
+    {
         return;
+    }
 
     result = nc_put_var_float(ncid, varid, blob);
 
@@ -1616,7 +1699,9 @@ PHP_FUNCTION(nc_put_var_double)
     void *blob = NULL;
 
     if ((ZEND_NUM_ARGS() != 3) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "lls", &ncid, &varid, &blob, &bloblen) != SUCCESS))
+    {
         return;
+    }
 
     result = nc_put_var_double(ncid, varid, blob);
 
@@ -1633,9 +1718,11 @@ PHP_FUNCTION(nc_strerror)
     char* result;
 
     if ((ZEND_NUM_ARGS() != 1) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l", &ncerr) != SUCCESS))
+    {
         WRONG_PARAM_COUNT;
+    }
 
-    result=(char *) nc_strerror(ncerr);
+    result = (char *) nc_strerror(ncerr);
 
     RETURN_STRING(result, 1);
 }
@@ -1650,9 +1737,11 @@ PHP_FUNCTION(nc_inq_libvers)
     zval *zlibvers;
 
     if (ZEND_NUM_ARGS())
+    {
         WRONG_PARAM_COUNT;
+    }
 
-    result=(char *) nc_inq_libvers();
+    result = (char *) nc_inq_libvers();
 
     RETURN_STRING(result, 1);
 }
@@ -1668,10 +1757,11 @@ PHP_FUNCTION(nc_strtype)
     zval *zlibvers;
 
     if ((ZEND_NUM_ARGS() != 1) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l", &xtype) != SUCCESS))
+    {
         WRONG_PARAM_COUNT;
+    }
 
-
-    result=(char *) netcdf_types[xtype];
+    result = (char *) netcdf_types[xtype];
 
     RETURN_STRING(result, 1);
 }
@@ -1722,43 +1812,47 @@ PHP_FUNCTION(nc_strtype)
             )
        )
    */
+
 PHP_FUNCTION(nc_dump_header)
 {
     long ncid, result;
     int i, j, nc_ndims, nc_nvars, nc_ngatts, unlimdimid, length, ndims, nattsp, at_len;
     nc_type var_type, at_type;
     char name[NC_MAX_NAME];
-    char *nc_dimnames[NC_MAX_DIMS]; 
+    char *nc_dimnames[NC_MAX_DIMS];
     int nc_dimlengths[NC_MAX_DIMS];
     int dimids[NC_MAX_VAR_DIMS];
     zval *zheader, *subarray, *var_array, *dim_array, *att_array, *zvalue;
     void *value = NULL;
 
-    if ((ZEND_NUM_ARGS() != 2) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "lz", &ncid, &zheader) != SUCCESS)) {
+    if ((ZEND_NUM_ARGS() != 2) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "lz", &ncid, &zheader) != SUCCESS))
+    {
         WRONG_PARAM_COUNT;
     }
 
     result = nc_inq(ncid, &nc_ndims, &nc_nvars, &nc_ngatts, &unlimdimid);
     if (result != NC_NOERR)
+    {
         RETURN_NETCDF_ERROR("nc_dump_header: error getting netcdf information (nc_inq)", result);
+    }
 
     array_init(zheader);
 
     /* Getting diemensions array */
     ALLOC_INIT_ZVAL(subarray);
     array_init(subarray);
-    for(i=0; i<nc_ndims; i++) {
-        result=nc_inq_dim(ncid, i, name, &length);
-        if (result != NC_NOERR) RETURN_NETCDF_ERROR("nc_dump_header: error getting dimension information (nc_inq_dim)",result);
+    for (i = 0; i < nc_ndims; i++) {
+        result = nc_inq_dim(ncid, i, name, &length);
+        if (result != NC_NOERR) RETURN_NETCDF_ERROR("nc_dump_header: error getting dimension information (nc_inq_dim)", result);
 
         nc_dimnames[i] = estrdup(name);          /* we keep them for the variables */
         nc_dimlengths[i] = length;               /* we keep them for the variables */
         add_assoc_long(subarray, name, length);
     }
-    add_assoc_zval(zheader,"dimensions",subarray);
+    add_assoc_zval(zheader, "dimensions", subarray);
 
-    if(unlimdimid != -1) {
-        result=nc_inq_dim(ncid, unlimdimid, name, &length);
+    if (unlimdimid != -1) {
+        result = nc_inq_dim(ncid, unlimdimid, name, &length);
         if (result != NC_NOERR)
             RETURN_NETCDF_ERROR("nc_dump_header: error getting dimension information (nc_inq_dim)", result);
 
@@ -1768,7 +1862,7 @@ PHP_FUNCTION(nc_dump_header)
     /* Getting variables array */
     ALLOC_INIT_ZVAL(subarray);
     array_init(subarray);
-    for(i = 0; i < nc_nvars; i++) {
+    for (i = 0; i < nc_nvars; i++) {
         result = nc_inq_varname(ncid, i, name);
         if (result != NC_NOERR)
             RETURN_NETCDF_ERROR("nc_dump_header: error getting variable name (nc_inq_varname)",result);
@@ -1779,12 +1873,12 @@ PHP_FUNCTION(nc_dump_header)
         ALLOC_INIT_ZVAL(var_array);
         array_init(var_array);
 
-        add_assoc_string(var_array,"name", name, 1);
-        add_assoc_string(var_array,"type", netcdf_types[var_type], 1);
+        add_assoc_string(var_array, "name", name, 1);
+        add_assoc_string(var_array, "type", netcdf_types[var_type], 1);
 
         ALLOC_INIT_ZVAL(dim_array);
         array_init(dim_array);
-        for(j = 0; j < ndims; j++)
+        for (j = 0; j < ndims; j++)
             add_assoc_long(dim_array, nc_dimnames[dimids[j]], nc_dimlengths[dimids[j]]);
 
         add_assoc_zval(var_array, "dimensions", dim_array);
@@ -1792,7 +1886,7 @@ PHP_FUNCTION(nc_dump_header)
         /* Getting attributes array of a variable */
         ALLOC_INIT_ZVAL(att_array);
         array_init(att_array);
-        for(j = 0; j < nattsp; j++) {
+        for (j = 0; j < nattsp; j++) {
             result = nc_inq_attname(ncid, i, j, name);
             if (result != NC_NOERR)
                 RETURN_NETCDF_ERROR("nc_dump_header: error getting attribute name (nc_inq_attname)", result);
@@ -1866,7 +1960,8 @@ int add_values(int ncid, int varid, int nc_dimlengths[], int scs_lengths[], size
     zval *var_values = NULL;
 
     result = nc_inq_var(ncid, varid, name, &xtype, &ndims, dimids, &nattsp);
-    if (result != NC_NOERR) {
+    if (result != NC_NOERR)
+    {
         php_error(E_WARNING, "nc_get_values: error getting the var information\n         %s", nc_strerror(result));
         return result;
     }
@@ -1874,12 +1969,17 @@ int add_values(int ncid, int varid, int nc_dimlengths[], int scs_lengths[], size
     ALLOC_INIT_ZVAL(var_values);
     array_init(var_values);
 
-    // simple case. all values
-    if(start == NULL && count == NULL && stride == NULL) {
+    /* simple case. all values */
+    if (start == NULL && count == NULL && stride == NULL)
+    {
         for(i = 0; i < ndims; i++)
+        {
             var_length *= nc_dimlengths[dimids[i]];
+        }
+
         values = allocate_space(xtype, var_length);
-        if (values == NULL) {
+        if (values == NULL)
+        {
             php_error(E_WARNING, "nc_get_values: error allocating memory to get values");
             return -1;
         }
@@ -1890,44 +1990,48 @@ int add_values(int ncid, int varid, int nc_dimlengths[], int scs_lengths[], size
         return NC_NOERR;
     }
 
-    // init tmp_start, tmp_count and tmp_stride to default values
+    /* init tmp_start, tmp_count and tmp_stride to default values */
     tmp_start  = (size_t*) emalloc(ndims * sizeof (size_t));
     tmp_count  = (size_t*) emalloc(ndims * sizeof (size_t));
     tmp_stride = (ptrdiff_t*) emalloc(ndims * sizeof (ptrdiff_t));
-    if (tmp_start == NULL || tmp_count == NULL || tmp_stride == NULL) {
+    if (tmp_start == NULL || tmp_count == NULL || tmp_stride == NULL)
+    {
         php_error(E_WARNING, "nc_get_values: error allocating memory");
         return -1;
     }
-    for(i = 0; i < ndims; i++) {
+
+    for (i = 0; i < ndims; i++)
+    {
         tmp_start[i] = 0;
         tmp_count[i] = nc_dimlengths[dimids[i]];
         tmp_stride[i] = 1;
     }
 
-    // update tmp_start, tmp_count and tmp_stride to user values
-    if(start != NULL)
-        for(i = 0; (i < ndims && i < scs_lengths[0]); i++)
+    /* update tmp_start, tmp_count and tmp_stride to user values */
+    if (start != NULL)
+        for (i = 0; (i < ndims && i < scs_lengths[0]); i++)
             tmp_start[i] = start[i];
 
-    if(stride != NULL)
-        for(i=0; (i < ndims && i < scs_lengths[2]); i++)
+    if (stride != NULL)
+        for(i = 0; (i < ndims && i < scs_lengths[2]); i++)
             tmp_stride[i] = stride[i];
 
-    // adjustemnt of count due to the stride
-    for(i=0; i < ndims; i++)
+    /* adjustment of count due to the stride */
+    for (i = 0; i < ndims; i++)
             tmp_count[i] = 1 + (int) ((tmp_count[i] - 1)/ tmp_stride[i]);
 
-    if(count != NULL)
-        for(i=0; (i < ndims && i < scs_lengths[1]); i++)
-            if(count[i] != -1)
+    if (count != NULL)
+        for (i = 0; (i < ndims && i < scs_lengths[1]); i++)
+            if (count[i] != -1)
                 tmp_count[i] = min(count[i], tmp_count[i]);
 
-    for(i = 0; i < ndims; i++)
+    for (i = 0; i < ndims; i++)
         var_length *= tmp_count[i];
 
     /* allocate required space before retrieving values */
     values = allocate_space(xtype, var_length);
-    if (values == NULL) {
+    if (values == NULL)
+    {
         php_error(E_WARNING, "nc_get_values: error allocating memory to get values");
         return -1;
     }
@@ -1943,19 +2047,19 @@ int add_values(int ncid, int varid, int nc_dimlengths[], int scs_lengths[], size
 
 /* {{{ proto int nc_get_values(int ncid, void *values, [char* var_names[], const size_t start[],const size_t count[],const ptrdiff_t stride[]])
     Returns an array with the values:
-    ncid         - Netcdf ID
+    ncid          - Netcdf ID
     values        - PHP value where will be set the output array
-    var_names[] - Array with the varables names to filter. If NULL or not included, all variables are in the output
-    start[]        - Array with start parameter. If NULL or not included, default is (0,0,..).
-                     In case that be (N), and the variable be multidimensional. It will be set to (N,0,0,...) for that variable
-                  In case that be (N,M) and the variable be unidiemnsional. It will be set to (N) for that variable
-    count[]     - Array with count parameter. If NULL or not included, default is (1,1,..).
-                     In case that be (N), and the variable be multidimensional. It will be set to (N,1,1,...) for that variable
-                    In case that be (N,M) and the variable be unidiemnsional. It will be set to (N) for that variable
-                  In case that any component be set to -1, it will be calculated to the maximum value depending on its dimension.
-    stride[]    - Array with stride parameter. If NULL or not included, default is (1,1,..).
-                     In case that be (N), and the variable be multidimensional. It will be set to (N,1,1,...) for that variable
-                    In case that be (N,M) and the variable be unidiemnsional. It will be set to (N) for that variable
+    var_names[]   - Array with the varables names to filter. If NULL or not included, all variables are in the output
+    start[]       - Array with start parameter. If NULL or not included, default is (0,0,..).
+                    In case that be (N), and the variable be multidimensional. It will be set to (N,0,0,...) for that variable
+                    In case that be (N,M) and the variable be unidimensional. It will be set to (N) for that variable
+    count[]       - Array with count parameter. If NULL or not included, default is (1,1,..).
+                    In case that be (N), and the variable be multidimensional. It will be set to (N,1,1,...) for that variable
+                    In case that be (N,M) and the variable be unidimensional. It will be set to (N) for that variable
+                    In case that any component be set to -1, it will be calculated to the maximum value depending on its dimension.
+    stride[]      - Array with stride parameter. If NULL or not included, default is (1,1,..).
+                    In case that be (N), and the variable be multidimensional. It will be set to (N,1,1,...) for that variable
+                    In case that be (N,M) and the variable be unidimensional. It will be set to (N) for that variable
    */
 PHP_FUNCTION(nc_get_values)
 {
@@ -1971,48 +2075,59 @@ PHP_FUNCTION(nc_get_values)
     HashTable *arr_hash;
     HashPosition pointer;
 
-    if ((ZEND_NUM_ARGS() < 2 || ZEND_NUM_ARGS()>6) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "lz|a!a!a!a!", &ncid, &zvalues, &zvar_names, &zstart, &zcount, &zstride) != SUCCESS)) {
+    if ((ZEND_NUM_ARGS() < 2 || ZEND_NUM_ARGS() > 6) ||
+        (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "lz|a!a!a!a!",
+        &ncid, &zvalues, &zvar_names, &zstart, &zcount, &zstride) != SUCCESS))
+    {
         WRONG_PARAM_COUNT;
     }
 
-    result=nc_inq(ncid, &nc_ndims, &nc_nvars, &nc_ngatts, &unlimdimid);
-    if (result != NC_NOERR) RETURN_NETCDF_ERROR("nc_get_values: error getting netcdf information (nc_inq)",result);
+    result = nc_inq(ncid, &nc_ndims, &nc_nvars, &nc_ngatts, &unlimdimid);
+    if (result != NC_NOERR) RETURN_NETCDF_ERROR("nc_get_values: error getting netcdf information (nc_inq)", result);
 
-    // Getting dimensions length
-    for(i=0; i<nc_ndims; i++) {
-        result=result=nc_inq_dimlen(ncid, i, &length);
+    /* Getting dimensions length */
+    for (i = 0; i < nc_ndims; i++)
+    {
+        result = result = nc_inq_dimlen(ncid, i, &length); /* wtf? */
         if (result != NC_NOERR) RETURN_NETCDF_ERROR("nc_get_values: error getting dimension information (nc_inq_dimlen)",result);
         nc_dimlengths[i] = length;               /* we get them for the variables */
     }
 
     /* reading var_names array and initialising varids array*/
-    if(zvar_names != NULL) {
+    if (zvar_names != NULL)
+    {
         arr_hash = Z_ARRVAL_P(zvar_names);
         varids = (int *)emalloc(zend_hash_num_elements(arr_hash) * sizeof (int));
         if (varids == NULL) RETURN_ERROR("nc_get_values: error allocating memory to get var_names");
 
         for (zend_hash_internal_pointer_reset_ex(arr_hash, &pointer), var_count = 0;
-        zend_hash_get_current_data_ex(arr_hash, (void**) &data, &pointer) == SUCCESS;
-        zend_hash_move_forward_ex(arr_hash, &pointer))
-        if (Z_TYPE_PP(data) == IS_STRING) {
-            result = nc_inq_varid(ncid, Z_STRVAL_PP(data), &varid);
-            if (result != NC_NOERR) php_error(E_WARNING, "nc_get_values: variable \"%s\" is not in the netcdf file", Z_STRVAL_PP(data));
-            else varids[var_count++] = varid;
+            zend_hash_get_current_data_ex(arr_hash, (void**) &data, &pointer) == SUCCESS;
+            zend_hash_move_forward_ex(arr_hash, &pointer))
+        {
+            if (Z_TYPE_PP(data) == IS_STRING)
+            {
+                result = nc_inq_varid(ncid, Z_STRVAL_PP(data), &varid);
+                if (result != NC_NOERR) php_error(E_WARNING, "nc_get_values: variable \"%s\" is not in the netcdf file", Z_STRVAL_PP(data));
+                else varids[var_count++] = varid;
+            }
         }
     }
 
     /* reading start array */
-    if(zstart != NULL) {
+    if (zstart != NULL)
+    {
         arr_hash = Z_ARRVAL_P(zstart);
-        start = (size_t*)emalloc(zend_hash_num_elements(arr_hash) * sizeof (size_t));
+        start = (size_t*)emalloc(zend_hash_num_elements(arr_hash) * sizeof(size_t));
         if (start == NULL) RETURN_ERROR("nc_get_values: error allocating memory to get start");
         scs_lengths[0] = zend_hash_num_elements(arr_hash);
 
         for (zend_hash_internal_pointer_reset_ex(arr_hash, &pointer), i = 0;
-        zend_hash_get_current_data_ex(arr_hash, (void**) &data, &pointer) == SUCCESS;
-        zend_hash_move_forward_ex(arr_hash, &pointer), i++)
-        if (Z_TYPE_PP(data) == IS_LONG)
-            start[i] = Z_LVAL_PP(data);
+            zend_hash_get_current_data_ex(arr_hash, (void**) &data, &pointer) == SUCCESS;
+            zend_hash_move_forward_ex(arr_hash, &pointer), i++)
+        {
+            if (Z_TYPE_PP(data) == IS_LONG)
+                start[i] = Z_LVAL_PP(data);
+        }
     }
 
     /* reading count array */
@@ -2023,10 +2138,12 @@ PHP_FUNCTION(nc_get_values)
         scs_lengths[1] = zend_hash_num_elements(arr_hash);
 
         for (zend_hash_internal_pointer_reset_ex(arr_hash, &pointer), i = 0;
-        zend_hash_get_current_data_ex(arr_hash, (void**) &data, &pointer) == SUCCESS;
-        zend_hash_move_forward_ex(arr_hash, &pointer), i++)
-        if (Z_TYPE_PP(data) == IS_LONG)
-            count[i] = Z_LVAL_PP(data);
+            zend_hash_get_current_data_ex(arr_hash, (void**) &data, &pointer) == SUCCESS;
+            zend_hash_move_forward_ex(arr_hash, &pointer), i++)
+        {
+            if (Z_TYPE_PP(data) == IS_LONG)
+                count[i] = Z_LVAL_PP(data);
+        }
     }
 
     /* reading stride array */
@@ -2037,10 +2154,12 @@ PHP_FUNCTION(nc_get_values)
         scs_lengths[2] = zend_hash_num_elements(arr_hash);
 
         for (zend_hash_internal_pointer_reset_ex(arr_hash, &pointer), i = 0;
-        zend_hash_get_current_data_ex(arr_hash, (void**) &data, &pointer) == SUCCESS;
-        zend_hash_move_forward_ex(arr_hash, &pointer), i++)
-        if (Z_TYPE_PP(data) == IS_LONG)
-            stride[i] = Z_LVAL_PP(data);
+            zend_hash_get_current_data_ex(arr_hash, (void**) &data, &pointer) == SUCCESS;
+            zend_hash_move_forward_ex(arr_hash, &pointer), i++)
+        {
+            if (Z_TYPE_PP(data) == IS_LONG)
+                stride[i] = Z_LVAL_PP(data);
+        }
     }
 
     array_init(zvalues);
