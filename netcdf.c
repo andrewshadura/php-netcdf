@@ -43,8 +43,9 @@ static char* netcdf_types[7] = { "NC_NAT", "NC_BYTE", "NC_CHAR", "NC_SHORT", "NC
 static zend_class_entry * NetcdfDataset_entry_ptr = NULL;
 #define PHP_NETCDF_DATASET_NAME "NetcdfDataset"
 
-#define RETURN_ERROR(msg) { php_error(E_WARNING, "%s",msg); RETURN_NULL(); }
-#define RETURN_NETCDF_ERROR(msg,error) { php_error(E_WARNING, "%s\n         %s",msg, nc_strerror(error)); RETURN_NULL(); }
+#define ISSUE_WARNING(msg) { php_error(E_WARNING, "%s: %s", __func__, msg); }
+#define RETURN_ERROR(msg) { php_error(E_WARNING, "%s: %s", __func__, msg); RETURN_NULL(); }
+#define RETURN_NETCDF_ERROR(msg,error) { php_error(E_WARNING, "%s: %s\n         %s", __func__, msg, nc_strerror(error)); RETURN_NULL(); }
 
 
 /* utility functions */
@@ -63,7 +64,7 @@ void *allocate_space(nc_type at_type, size_t at_len) {
         case NC_DOUBLE:
             return emalloc(at_len * sizeof (double));
     }
-    php_error(E_WARNING, "Unsupported Netcdf type");
+    ISSUE_WARNING("Unsupported netCDF type");
     return NULL;
 }
 
@@ -157,7 +158,7 @@ int assign_value(nc_type at_type, size_t at_len, zval *zvalue, void *value){
     arr_hash = Z_ARRVAL_P(zvalue);
     if(at_len != zend_hash_num_elements(arr_hash))
     {
-        php_error(E_WARNING, "The number of elements in array must correspond to the variable's dimensions");
+        ISSUE_WARNING("The number of elements in array must correspond to the variable's dimensions");
         return 0;
     }
 
@@ -659,7 +660,7 @@ PHP_FUNCTION(nc_create)
     /* check for netCDF ID being passed by reference */
     if (!PZVAL_IS_REF(zncid))
     {
-        zend_error(E_WARNING, "Variable for netCDF ID should be passed by reference");
+        ISSUE_WARNING("Variable for netCDF ID should be passed by reference");
         RETURN_NULL();
     }
 
@@ -687,7 +688,7 @@ PHP_FUNCTION(nc_open)
     /* check for netCDF ID being passed by reference */
     if (!PZVAL_IS_REF(zncid))
     {
-        zend_error(E_WARNING, "Variable for netCDF ID should be passed by reference");
+        ISSUE_WARNING("Variable for netCDF ID should be passed by reference");
         RETURN_NULL();
     }
 
@@ -1833,7 +1834,7 @@ PHP_FUNCTION(nc_dump_header)
     result = nc_inq(ncid, &nc_ndims, &nc_nvars, &nc_ngatts, &unlimdimid);
     if (result != NC_NOERR)
     {
-        RETURN_NETCDF_ERROR("nc_dump_header: error getting netcdf information (nc_inq)", result);
+        RETURN_NETCDF_ERROR("error getting netCDF information (nc_inq)", result);
     }
 
     array_init(zheader);
@@ -1962,7 +1963,7 @@ int add_values(int ncid, int varid, int nc_dimlengths[], int scs_lengths[], size
     result = nc_inq_var(ncid, varid, name, &xtype, &ndims, dimids, &nattsp);
     if (result != NC_NOERR)
     {
-        php_error(E_WARNING, "nc_get_values: error getting the var information\n         %s", nc_strerror(result));
+        ISSUE_WARNING("error getting the var information\n         %s", nc_strerror(result));
         return result;
     }
 
@@ -1980,7 +1981,7 @@ int add_values(int ncid, int varid, int nc_dimlengths[], int scs_lengths[], size
         values = allocate_space(xtype, var_length);
         if (values == NULL)
         {
-            php_error(E_WARNING, "nc_get_values: error allocating memory to get values");
+            ISSUE_WARNING("error allocating memory to get values");
             return -1;
         }
         result = nc_get_var(ncid, varid, values);
@@ -1996,7 +1997,7 @@ int add_values(int ncid, int varid, int nc_dimlengths[], int scs_lengths[], size
     tmp_stride = (ptrdiff_t*) emalloc(ndims * sizeof (ptrdiff_t));
     if (tmp_start == NULL || tmp_count == NULL || tmp_stride == NULL)
     {
-        php_error(E_WARNING, "nc_get_values: error allocating memory");
+        ISSUE_WARNING("error allocating memory");
         return -1;
     }
 
@@ -2032,7 +2033,7 @@ int add_values(int ncid, int varid, int nc_dimlengths[], int scs_lengths[], size
     values = allocate_space(xtype, var_length);
     if (values == NULL)
     {
-        php_error(E_WARNING, "nc_get_values: error allocating memory to get values");
+        ISSUE_WARNING("error allocating memory to get values");
         return -1;
     }
 
@@ -2083,13 +2084,13 @@ PHP_FUNCTION(nc_get_values)
     }
 
     result = nc_inq(ncid, &nc_ndims, &nc_nvars, &nc_ngatts, &unlimdimid);
-    if (result != NC_NOERR) RETURN_NETCDF_ERROR("nc_get_values: error getting netcdf information (nc_inq)", result);
+    if (result != NC_NOERR) RETURN_NETCDF_ERROR("error getting netcdf information (nc_inq)", result);
 
     /* Getting dimensions length */
     for (i = 0; i < nc_ndims; i++)
     {
         result = result = nc_inq_dimlen(ncid, i, &length); /* wtf? */
-        if (result != NC_NOERR) RETURN_NETCDF_ERROR("nc_get_values: error getting dimension information (nc_inq_dimlen)",result);
+        if (result != NC_NOERR) RETURN_NETCDF_ERROR("error getting dimension information (nc_inq_dimlen)", result);
         nc_dimlengths[i] = length;               /* we get them for the variables */
     }
 
@@ -2098,7 +2099,7 @@ PHP_FUNCTION(nc_get_values)
     {
         arr_hash = Z_ARRVAL_P(zvar_names);
         varids = (int *)emalloc(zend_hash_num_elements(arr_hash) * sizeof (int));
-        if (varids == NULL) RETURN_ERROR("nc_get_values: error allocating memory to get var_names");
+        if (varids == NULL) RETURN_ERROR("error allocating memory to get var_names");
 
         for (zend_hash_internal_pointer_reset_ex(arr_hash, &pointer), var_count = 0;
             zend_hash_get_current_data_ex(arr_hash, (void**) &data, &pointer) == SUCCESS;
@@ -2107,7 +2108,7 @@ PHP_FUNCTION(nc_get_values)
             if (Z_TYPE_PP(data) == IS_STRING)
             {
                 result = nc_inq_varid(ncid, Z_STRVAL_PP(data), &varid);
-                if (result != NC_NOERR) php_error(E_WARNING, "nc_get_values: variable \"%s\" is not in the netcdf file", Z_STRVAL_PP(data));
+                if (result != NC_NOERR) php_error(E_WARNING, "%s: variable \"%s\" is not in the netcdf file", __func__, Z_STRVAL_PP(data));
                 else varids[var_count++] = varid;
             }
         }
@@ -2118,7 +2119,7 @@ PHP_FUNCTION(nc_get_values)
     {
         arr_hash = Z_ARRVAL_P(zstart);
         start = (size_t*)emalloc(zend_hash_num_elements(arr_hash) * sizeof(size_t));
-        if (start == NULL) RETURN_ERROR("nc_get_values: error allocating memory to get start");
+        if (start == NULL) RETURN_ERROR("error allocating memory to get start");
         scs_lengths[0] = zend_hash_num_elements(arr_hash);
 
         for (zend_hash_internal_pointer_reset_ex(arr_hash, &pointer), i = 0;
@@ -2134,7 +2135,7 @@ PHP_FUNCTION(nc_get_values)
     if(zcount != NULL) {
         arr_hash = Z_ARRVAL_P(zcount);
         count = (size_t*) emalloc(zend_hash_num_elements(arr_hash) * sizeof (size_t));
-        if (count == NULL) RETURN_ERROR("nc_get_values: error allocating memory to get count");
+        if (count == NULL) RETURN_ERROR("error allocating memory to get count");
         scs_lengths[1] = zend_hash_num_elements(arr_hash);
 
         for (zend_hash_internal_pointer_reset_ex(arr_hash, &pointer), i = 0;
@@ -2150,7 +2151,7 @@ PHP_FUNCTION(nc_get_values)
     if(zstride != NULL) {
         arr_hash = Z_ARRVAL_P(zstride);
         stride = (ptrdiff_t*)emalloc(zend_hash_num_elements(arr_hash) * sizeof (ptrdiff_t));
-        if (stride == NULL) RETURN_ERROR("nc_get_values: error allocating memory to get stride");
+        if (stride == NULL) RETURN_ERROR("error allocating memory to get stride");
         scs_lengths[2] = zend_hash_num_elements(arr_hash);
 
         for (zend_hash_internal_pointer_reset_ex(arr_hash, &pointer), i = 0;
