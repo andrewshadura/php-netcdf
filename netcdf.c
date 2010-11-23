@@ -43,9 +43,9 @@ static char* netcdf_types[7] = { "NC_NAT", "NC_BYTE", "NC_CHAR", "NC_SHORT", "NC
 static zend_class_entry * NetcdfDataset_entry_ptr = NULL;
 #define PHP_NETCDF_DATASET_NAME "NetcdfDataset"
 
-#define ISSUE_WARNING(msg) { php_error(E_WARNING, "%s: %s", __func__, msg); }
-#define RETURN_ERROR(msg) { php_error(E_WARNING, "%s: %s", __func__, msg); RETURN_NULL(); }
-#define RETURN_NETCDF_ERROR(msg,error) { php_error(E_WARNING, "%s: %s\n         %s", __func__, msg, nc_strerror(error)); RETURN_NULL(); }
+#define ISSUE_WARNING(msg) { zend_error(E_WARNING, "%s: %s", __func__, msg); }
+#define RETURN_ERROR(msg) { zend_error(E_WARNING, "%s: %s", __func__, msg); RETURN_NULL(); }
+#define RETURN_NETCDF_ERROR(msg,error) { zend_error(E_WARNING, "%s: %s\n         %s", __func__, msg, nc_strerror(error)); RETURN_NULL(); }
 
 
 /* utility functions */
@@ -1963,7 +1963,7 @@ int add_values(int ncid, int varid, int nc_dimlengths[], int scs_lengths[], size
     result = nc_inq_var(ncid, varid, name, &xtype, &ndims, dimids, &nattsp);
     if (result != NC_NOERR)
     {
-        ISSUE_WARNING("error getting the var information\n         %s", nc_strerror(result));
+        zend_error(E_WARNING, "%sL error getting the var information\n         %s", __func__, nc_strerror(result));
         return result;
     }
 
