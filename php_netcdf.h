@@ -177,6 +177,7 @@ PHP_FUNCTION(nc_get_var);
 PHP_FUNCTION(nc_get_vara);
 PHP_FUNCTION(nc_get_vars);
 
+PHP_FUNCTION(nc_put_var);
 PHP_FUNCTION(nc_put_var_text);
 PHP_FUNCTION(nc_put_var_uchar);
 PHP_FUNCTION(nc_put_var_schar);
