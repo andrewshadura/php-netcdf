@@ -187,6 +187,47 @@ int assign_value(nc_type at_type, size_t at_len, zval *zvalue, void *value){
     return 1;
 }
 
+void *get_values_from_array(nc_type at_type, zval *zvalue){
+    int i;
+    zval **data;
+    HashTable *arr_hash;
+    HashPosition pointer;
+    void *values;
+
+    arr_hash = Z_ARRVAL_P(zvalue);
+
+    values = allocate_space(at_type, zend_hash_num_elements(arr_hash));
+    if (values == NULL)
+    {
+        ISSUE_WARNING("error allocating memory");
+        return NULL;
+    }
+
+    for (zend_hash_internal_pointer_reset_ex(arr_hash, &pointer), i = 0;
+        zend_hash_get_current_data_ex(arr_hash, (void**) &data, &pointer) == SUCCESS;
+        zend_hash_move_forward_ex(arr_hash, &pointer), i++)
+    {
+       switch(at_type)
+       {
+            case NC_BYTE:
+                *(((char *)values) + i) = Z_LVAL_PP(data);
+                break;
+            case NC_SHORT:
+                *(((short *)values) + i) = Z_LVAL_PP(data);
+                break;
+            case NC_INT:
+                *(((int *)values) + i) = Z_LVAL_PP(data);
+                break;
+            case NC_FLOAT:
+                *(((float *)values) + i) = Z_DVAL_PP(data);
+                break;
+            case NC_DOUBLE:
+                *(((double *)values) + i) = Z_DVAL_PP(data);
+        }
+    }
+    return values;
+}
+
 #ifndef CONFIG_NETCDF_4
 /* Function inserted as NETCDF-3 doesn't implement it. */
 int nc_get_var(int ncid, int varid, void *values) {
@@ -1563,23 +1604,22 @@ PHP_FUNCTION(nc_put_var_text)
 
 
 
-/* {{{ proto int nc_put_var_uchar(int ncid, int varid, string &blob, &bloblen); */
+/* {{{ proto int nc_put_var_uchar(int ncid, int varid, const uchar values[]); */
 PHP_FUNCTION(nc_put_var_uchar)
 {
-    int argc = ZEND_NUM_ARGS();
-    long ncid;
-    long varid;
-    long result;
-    long bloblen;
-    void *blob = NULL;
+    long ncid, varid, result;
+    zval *zvalues;
+    void *values = NULL;
 
-    if ((ZEND_NUM_ARGS() != 3) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "lls", &ncid, &varid, &blob, &bloblen) != SUCCESS))
+    if ((ZEND_NUM_ARGS() != 3) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "lla", &ncid, &varid, &zvalues) != SUCCESS))
     {
-        return;
+        WRONG_PARAM_COUNT;
     }
 
-    result = nc_put_var_uchar(ncid, varid, blob);
+    values = get_values_from_array(NC_BYTE, zvalues);
+    if (values == NULL) RETURN_NULL();
 
+    result = nc_put_var_uchar(ncid, varid, (unsigned char *)values);
     RETURN_LONG(result);
 }
 /* }}} */
@@ -1587,20 +1627,19 @@ PHP_FUNCTION(nc_put_var_uchar)
 /* {{{ proto int nc_put_var_schar(int ncid, int varid, string &blob, &bloblen); */
 PHP_FUNCTION(nc_put_var_schar)
 {
-    int argc = ZEND_NUM_ARGS();
-    long ncid;
-    long varid;
-    long result;
-    long bloblen;
-    void *blob = NULL;
+    long ncid, varid, result;
+    zval *zvalues;
+    void *values = NULL;
 
-    if ((ZEND_NUM_ARGS() != 3) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "lls", &ncid, &varid, &blob, &bloblen) != SUCCESS))
+    if ((ZEND_NUM_ARGS() != 3) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "lla", &ncid, &varid, &zvalues) != SUCCESS))
     {
-        return;
+        WRONG_PARAM_COUNT;
     }
 
-    result = nc_put_var_schar(ncid, varid, blob);
+    values = get_values_from_array(NC_BYTE, zvalues);
+    if (values == NULL) RETURN_NULL();
 
+    result = nc_put_var_schar(ncid, varid, (char *)values);
     RETURN_LONG(result);
 }
 /* }}} */
@@ -1608,20 +1647,19 @@ PHP_FUNCTION(nc_put_var_schar)
 /* {{{ proto int nc_put_var_short(int ncid, int varid, string &blob, &bloblen); */
 PHP_FUNCTION(nc_put_var_short)
 {
-    int argc = ZEND_NUM_ARGS();
-    long ncid;
-    long varid;
-    long result;
-    long bloblen;
-    void *blob = NULL;
+    long ncid, varid, result;
+    zval *zvalues;
+    void *values = NULL;
 
-    if ((ZEND_NUM_ARGS() != 3) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "lls", &ncid, &varid, &blob, &bloblen) != SUCCESS))
+    if ((ZEND_NUM_ARGS() != 3) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "lla", &ncid, &varid, &zvalues) != SUCCESS))
     {
-        return;
+        WRONG_PARAM_COUNT;
     }
 
-    result = nc_put_var_short(ncid, varid, blob);
+    values = get_values_from_array(NC_SHORT, zvalues);
+    if (values == NULL) RETURN_NULL();
 
+    result = nc_put_var_short(ncid, varid, (short *)values);
     RETURN_LONG(result);
 }
 /* }}} */
@@ -1629,20 +1667,19 @@ PHP_FUNCTION(nc_put_var_short)
 /* {{{ proto int nc_put_var_int(int ncid, int varid, string &blob, &bloblen); */
 PHP_FUNCTION(nc_put_var_int)
 {
-    int argc = ZEND_NUM_ARGS();
-    long ncid;
-    long varid;
-    long result;
-    long bloblen;
-    void *blob = NULL;
+    long ncid, varid, result;
+    zval *zvalues;
+    void *values = NULL;
 
-    if ((ZEND_NUM_ARGS() != 3) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "lls", &ncid, &varid, &blob, &bloblen) != SUCCESS))
+    if ((ZEND_NUM_ARGS() != 3) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "lla", &ncid, &varid, &zvalues) != SUCCESS))
     {
-        return;
+        WRONG_PARAM_COUNT;
     }
 
-    result = nc_put_var_int(ncid, varid, blob);
+    values = get_values_from_array(NC_INT, zvalues);
+    if (values == NULL) RETURN_NULL();
 
+    result = nc_put_var_int(ncid, varid, (int *)values);
     RETURN_LONG(result);
 }
 /* }}} */
@@ -1671,20 +1708,19 @@ PHP_FUNCTION(nc_put_var_long)
 /* {{{ proto int nc_put_var_float(int ncid, int varid, string &blob, &bloblen); */
 PHP_FUNCTION(nc_put_var_float)
 {
-    int argc = ZEND_NUM_ARGS();
-    long ncid;
-    long varid;
-    long result;
-    long bloblen;
-    void *blob = NULL;
+    long ncid, varid, result;
+    zval *zvalues;
+    void *values = NULL;
 
-    if ((ZEND_NUM_ARGS() != 3) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "lls", &ncid, &varid, &blob, &bloblen) != SUCCESS))
+    if ((ZEND_NUM_ARGS() != 3) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "lla", &ncid, &varid, &zvalues) != SUCCESS))
     {
-        return;
+        WRONG_PARAM_COUNT;
     }
 
-    result = nc_put_var_float(ncid, varid, blob);
+    values = get_values_from_array(NC_FLOAT, zvalues);
+    if (values == NULL) RETURN_NULL();
 
+    result = nc_put_var_float(ncid, varid, (float *)values);
     RETURN_LONG(result);
 }
 /* }}} */
@@ -1692,20 +1728,19 @@ PHP_FUNCTION(nc_put_var_float)
 /* {{{ proto int nc_put_var_double(int ncid, int varid, string &blob, &bloblen); */
 PHP_FUNCTION(nc_put_var_double)
 {
-    int argc = ZEND_NUM_ARGS();
-    long ncid;
-    long varid;
-    long result;
-    long bloblen;
-    void *blob = NULL;
+    long ncid, varid, result;
+    zval *zvalues;
+    void *values = NULL;
 
-    if ((ZEND_NUM_ARGS() != 3) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "lls", &ncid, &varid, &blob, &bloblen) != SUCCESS))
+    if ((ZEND_NUM_ARGS() != 3) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "lla", &ncid, &varid, &zvalues) != SUCCESS))
     {
-        return;
+        WRONG_PARAM_COUNT;
     }
 
-    result = nc_put_var_double(ncid, varid, blob);
+    values = get_values_from_array(NC_DOUBLE, zvalues);
+    if (values == NULL) RETURN_NULL();
 
+    result = nc_put_var_double(ncid, varid, (double *)values);
     RETURN_LONG(result);
 }
 /* }}} */
