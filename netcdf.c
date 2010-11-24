@@ -1087,7 +1087,7 @@ PHP_FUNCTION(nc_inq_var)
     }
 
     result = nc_inq_var(ncid, varid, name, &xtype, &ndims, dimids, &nattsp);
-    if (result != NC_NOERR) RETURN_NETCDF_ERROR("nc_inq_var: error getting the var information",result);
+    if (result != NC_NOERR) RETURN_NETCDF_ERROR("error getting the var information", result);
 
     array_init(zdimids);
     for(i = 0; i < ndims; i++)
@@ -1200,13 +1200,13 @@ PHP_FUNCTION(nc_inq_vardimid)
     }
 
     result = nc_inq_varndims(ncid, varid, &ndims);
-    if (result != NC_NOERR) RETURN_NETCDF_ERROR("nc_inq_vardimid: error getting the number of dimensions", result);
+    if (result != NC_NOERR) RETURN_NETCDF_ERROR("error getting the number of dimensions", result);
 
     dimids = (int*)emalloc(ndims * sizeof (int));
-    if (dimids == NULL) RETURN_ERROR("nc_inq_vardimid: error allocating memory to get the number of dimensions");
+    if (dimids == NULL) RETURN_ERROR("error allocating memory to get the number of dimensions");
 
     result = nc_inq_vardimid(ncid, varid, dimids);
-    if (result != NC_NOERR) RETURN_NETCDF_ERROR("nc_inq_vardimid: error getting the number of dimensions",result);
+    if (result != NC_NOERR) RETURN_NETCDF_ERROR("error getting the number of dimensions", result);
 
     array_init(zdimids);
     for (i = 0; i < ndims; i++)
@@ -1277,14 +1277,14 @@ PHP_FUNCTION(nc_get_att)
     }
 
     result = nc_inq_att (ncid, varid, name, &at_type, &at_len);
-    if (result != NC_NOERR) RETURN_NETCDF_ERROR("nc_get_att: error getting attribute information (nc_inq_att)",result);
+    if (result != NC_NOERR) RETURN_NETCDF_ERROR("error getting attribute information (nc_inq_att)", result);
 
     /* allocate required space before retrieving values */
     value = allocate_space(at_type,at_len);
-    if (value == NULL) RETURN_ERROR("nc_get_att: error allocating memory to get attribute value");
+    if (value == NULL) RETURN_ERROR("error allocating memory to get attribute value");
 
     result = nc_get_att(ncid, varid, name, value);
-    if (result != NC_NOERR) RETURN_NETCDF_ERROR("nc_get_att: error getting attribute value",result);
+    if (result != NC_NOERR) RETURN_NETCDF_ERROR("error getting attribute value", result);
 
     /* assign value/s to zvalue */
     assign_zval(at_type, at_len, value, zvalue);
@@ -1311,22 +1311,22 @@ PHP_FUNCTION(nc_get_var1)
     }
 
     result = nc_inq_varndims(ncid, varid, &ndims);
-    if (result != NC_NOERR) RETURN_NETCDF_ERROR("nc_get_var1: error getting variable dimension number",result);
+    if (result != NC_NOERR) RETURN_NETCDF_ERROR("error getting variable dimension number",result);
 
     result = nc_inq_vartype(ncid, varid, &xtype);
-    if (result != NC_NOERR) RETURN_NETCDF_ERROR("nc_get_var1: error getting variable type",result);
+    if (result != NC_NOERR) RETURN_NETCDF_ERROR("error getting variable type",result);
 
     indexp = (size_t*)emalloc(ndims * sizeof (size_t));
-    if (indexp == NULL) RETURN_ERROR("nc_get_var1: error allocating memory to get indices");
+    if (indexp == NULL) RETURN_ERROR("error allocating memory to get indices");
 
     if (assign_value(NC_INT, ndims, zindexp, (void *)indexp) == 0)
     {
-        RETURN_ERROR("nc_get_var1: error reading indexp array");
+        RETURN_ERROR("error reading indexp array");
     }
 
     /* allocate required space before retrieving value */
     value = allocate_space(xtype,1);
-    if (value == NULL) RETURN_ERROR("nc_get_var1: error allocating memory to get value");
+    if (value == NULL) RETURN_ERROR("error allocating memory to get value");
 
     result = nc_get_var1(ncid, varid, indexp, value);
     assign_zval(xtype, 1, value, zvalue);
@@ -1354,17 +1354,17 @@ PHP_FUNCTION(nc_get_var)
     }
 
     result = nc_inq_var(ncid, varid, name, &xtype, &ndims, dimids, &nattsp);
-    if (result != NC_NOERR) RETURN_NETCDF_ERROR("nc_get_var: error getting the var information", result);
+    if (result != NC_NOERR) RETURN_NETCDF_ERROR("error getting the var information", result);
 
     for (i = 0; i < ndims; i++) {
         result = nc_inq_dimlen(ncid, dimids[i], &dim_length);
-        if (result != NC_NOERR) RETURN_NETCDF_ERROR("nc_get_var: error getting the dimension information", result);
+        if (result != NC_NOERR) RETURN_NETCDF_ERROR("error getting the dimension information", result);
         var_length *= dim_length;
     }
 
     /* allocate required space before retrieving values */
     values = allocate_space(xtype, var_length);
-    if (values == NULL) RETURN_ERROR("nc_get_var: error allocating memory to get values");
+    if (values == NULL) RETURN_ERROR("error allocating memory to get values");
 
  
     result = nc_get_var(ncid, varid, values);
@@ -1394,22 +1394,22 @@ PHP_FUNCTION(nc_get_vara)
     }
 
     result = nc_inq_var(ncid, varid, name, &xtype, &ndims, dimids, &nattsp);
-    if (result != NC_NOERR) RETURN_NETCDF_ERROR("nc_get_vara: error getting the var information", result);
+    if (result != NC_NOERR) RETURN_NETCDF_ERROR("error getting the var information", result);
 
     /* reading start array */
     start = (size_t*)emalloc(ndims * sizeof (size_t));
-    if (start == NULL) RETURN_ERROR("nc_get_vara: error allocating memory to get start");
+    if (start == NULL) RETURN_ERROR("error allocating memory to get start");
 
     if (assign_value(NC_INT, ndims, zstart, (void *)start) == 0)
-        RETURN_ERROR("nc_get_vara: error reading start array");
+        RETURN_ERROR("error reading start array");
 
     /* reading count array */
     count = (size_t*)emalloc(ndims * sizeof (size_t));
-    if (count == NULL) RETURN_ERROR("nc_get_vara: error allocating memory to get count");
+    if (count == NULL) RETURN_ERROR("error allocating memory to get count");
 
     if (assign_value(NC_INT, ndims, zcount, (void *)count) == 0)
     {
-        RETURN_ERROR("nc_get_vara: error reading count array");
+        RETURN_ERROR("error reading count array");
     }
 
     for (i = 0; i < ndims; i++)
@@ -1419,7 +1419,7 @@ PHP_FUNCTION(nc_get_vara)
 
     /* allocate required space before retrieving values */
     values = allocate_space(xtype, var_length);
-    if (values == NULL) RETURN_ERROR("nc_get_vara: error allocating memory to get values");
+    if (values == NULL) RETURN_ERROR("error allocating memory to get values");
 
     result = nc_get_vara(ncid, varid, start, count, values);
     assign_zval(xtype, var_length, values, zvalues);
@@ -1450,33 +1450,33 @@ PHP_FUNCTION(nc_get_vars)
     }
 
     result = nc_inq_var(ncid, varid, name, &xtype, &ndims, dimids, &nattsp);
-    if (result != NC_NOERR) RETURN_NETCDF_ERROR("nc_get_vars: error getting the var information", result);
+    if (result != NC_NOERR) RETURN_NETCDF_ERROR("error getting the var information", result);
 
     /* reading start array */
     start = (size_t*)emalloc(ndims * sizeof (size_t));
-    if (start == NULL) RETURN_ERROR("nc_get_vars: error allocating memory to get start");
+    if (start == NULL) RETURN_ERROR("error allocating memory to get start");
 
     if (assign_value(NC_INT, ndims, zstart, (void *) start) == 0)
     {
-        RETURN_ERROR("nc_get_vars: error reading start array");
+        RETURN_ERROR("error reading start array");
     }
 
     /* reading count array */
     count = (size_t*)emalloc(ndims * sizeof (size_t));
-    if (count == NULL) RETURN_ERROR("nc_get_vars: error allocating memory to get count");
+    if (count == NULL) RETURN_ERROR("error allocating memory to get count");
 
     if (assign_value(NC_INT, ndims, zcount, (void *) count) == 0)
     {
-        RETURN_ERROR("nc_get_vars: error reading count array");
+        RETURN_ERROR("error reading count array");
     }
 
     /* reading stride array */
     stride = (ptrdiff_t*)emalloc(ndims * sizeof (ptrdiff_t));
-    if (stride == NULL) RETURN_ERROR("nc_get_vars: error allocating memory to get stride");
+    if (stride == NULL) RETURN_ERROR("error allocating memory to get stride");
 
     if(assign_value(NC_INT, ndims, zstride, (void *) stride) == 0)
     {
-        RETURN_ERROR("nc_get_vars: error reading stride array");
+        RETURN_ERROR("error reading stride array");
     }
 
 
@@ -1487,7 +1487,7 @@ PHP_FUNCTION(nc_get_vars)
 
     /* allocate required space before retrieving values */
     values = allocate_space(xtype, var_length);
-    if (values == NULL) RETURN_ERROR("nc_get_vars: error allocating memory to get values"); 
+    if (values == NULL) RETURN_ERROR("error allocating memory to get values"); 
 
     result = nc_get_vars(ncid, varid, start, count, stride, values);
     assign_zval(xtype, var_length, values, zvalues);
@@ -1516,21 +1516,21 @@ PHP_FUNCTION(nc_put_var)
     }
 
     result = nc_inq_var(ncid, varid, name, &xtype, &ndims, dimids, &nattsp);
-    if (result != NC_NOERR) RETURN_NETCDF_ERROR("nc_put_var: error getting the var information", result);
+    if (result != NC_NOERR) RETURN_NETCDF_ERROR("error getting the var information", result);
 
     for(i=0; i<ndims; i++){
         result=nc_inq_dimlen(ncid, dimids[i], &dim_length);
-        if (result != NC_NOERR) RETURN_NETCDF_ERROR("nc_put_var: error getting the dimension information", result);
+        if (result != NC_NOERR) RETURN_NETCDF_ERROR("error getting the dimension information", result);
         var_length *= dim_length;
     }
 
     /* allocate required space before retrieving values */
     values = allocate_space(xtype, var_length);
-    if (values == NULL) RETURN_ERROR("nc_put_var: error allocating memory to get values");
+    if (values == NULL) RETURN_ERROR("error allocating memory to get values");
 
     if (assign_value(xtype, var_length, zvalues, values) == 0)
     {
-        RETURN_ERROR("nc_put_var: error reading values to write");
+        RETURN_ERROR("error reading values to write");
     }
 
     result = nc_put_var(ncid, varid, values);
@@ -1844,7 +1844,7 @@ PHP_FUNCTION(nc_dump_header)
     array_init(subarray);
     for (i = 0; i < nc_ndims; i++) {
         result = nc_inq_dim(ncid, i, name, &length);
-        if (result != NC_NOERR) RETURN_NETCDF_ERROR("nc_dump_header: error getting dimension information (nc_inq_dim)", result);
+        if (result != NC_NOERR) RETURN_NETCDF_ERROR("error getting dimension information (nc_inq_dim)", result);
 
         nc_dimnames[i] = estrdup(name);          /* we keep them for the variables */
         nc_dimlengths[i] = length;               /* we keep them for the variables */
@@ -1855,7 +1855,7 @@ PHP_FUNCTION(nc_dump_header)
     if (unlimdimid != -1) {
         result = nc_inq_dim(ncid, unlimdimid, name, &length);
         if (result != NC_NOERR)
-            RETURN_NETCDF_ERROR("nc_dump_header: error getting dimension information (nc_inq_dim)", result);
+            RETURN_NETCDF_ERROR("error getting dimension information (nc_inq_dim)", result);
 
         add_assoc_string(zheader, "unlimdim", name, 1);
     }
@@ -1866,10 +1866,10 @@ PHP_FUNCTION(nc_dump_header)
     for (i = 0; i < nc_nvars; i++) {
         result = nc_inq_varname(ncid, i, name);
         if (result != NC_NOERR)
-            RETURN_NETCDF_ERROR("nc_dump_header: error getting variable name (nc_inq_varname)",result);
+            RETURN_NETCDF_ERROR("error getting variable name (nc_inq_varname)",result);
 
         result = nc_inq_var(ncid, i, name, &var_type, &ndims, dimids, &nattsp);
-        if (result != NC_NOERR) RETURN_NETCDF_ERROR("nc_dump_header: error getting variable information (nc_inq_var)", result);
+        if (result != NC_NOERR) RETURN_NETCDF_ERROR("error getting variable information (nc_inq_var)", result);
 
         ALLOC_INIT_ZVAL(var_array);
         array_init(var_array);
@@ -1890,19 +1890,19 @@ PHP_FUNCTION(nc_dump_header)
         for (j = 0; j < nattsp; j++) {
             result = nc_inq_attname(ncid, i, j, name);
             if (result != NC_NOERR)
-                RETURN_NETCDF_ERROR("nc_dump_header: error getting attribute name (nc_inq_attname)", result);
+                RETURN_NETCDF_ERROR("error getting attribute name (nc_inq_attname)", result);
 
             result = nc_inq_att(ncid, i, name, &at_type, &at_len);
             if (result != NC_NOERR)
-                RETURN_NETCDF_ERROR("nc_dump_header: error getting attribute information (nc_inq_att)", result);
+                RETURN_NETCDF_ERROR("error getting attribute information (nc_inq_att)", result);
 
             value = allocate_space(at_type, at_len);
             if (value == NULL)
-                RETURN_ERROR("nc_dump_header: error allocating memory to get attribute value");
+                RETURN_ERROR("error allocating memory to get attribute value");
 
             result = nc_get_att(ncid, i, name, value);
             if (result != NC_NOERR)
-                RETURN_NETCDF_ERROR("nc_dump_header: error getting attribute value (nc_get_att)", result);
+                RETURN_NETCDF_ERROR("error getting attribute value (nc_get_att)", result);
 
             ALLOC_INIT_ZVAL(zvalue);
             assign_zval(at_type, at_len, value, zvalue);
@@ -1921,18 +1921,18 @@ PHP_FUNCTION(nc_dump_header)
     for(i = 0; i < nc_ngatts; i++) {
         result = nc_inq_attname(ncid, NC_GLOBAL, i, name);
         if (result != NC_NOERR)
-            RETURN_NETCDF_ERROR("nc_dump_header: error getting attribute name (nc_inq_attname)", result);
+            RETURN_NETCDF_ERROR("error getting attribute name (nc_inq_attname)", result);
         result = nc_inq_att(ncid, NC_GLOBAL, name, &at_type, &at_len);
         if (result != NC_NOERR)
-            RETURN_NETCDF_ERROR("nc_dump_header: error getting attribute information (nc_inq_att)", result);
+            RETURN_NETCDF_ERROR("error getting attribute information (nc_inq_att)", result);
 
         value = allocate_space(at_type,at_len);
         if (value == NULL)
-            RETURN_ERROR("nc_dump_header: error allocating memory to get attribute value");
+            RETURN_ERROR("error allocating memory to get attribute value");
 
         result = nc_get_att(ncid, NC_GLOBAL, name, value);
         if (result != NC_NOERR)
-            RETURN_NETCDF_ERROR("nc_dump_header: error getting attribute value (nc_get_att)", result);
+            RETURN_NETCDF_ERROR("error getting attribute value (nc_get_att)", result);
 
         ALLOC_INIT_ZVAL(zvalue);
         assign_zval(at_type, at_len, value, zvalue);
@@ -1963,7 +1963,7 @@ int add_values(int ncid, int varid, int nc_dimlengths[], int scs_lengths[], size
     result = nc_inq_var(ncid, varid, name, &xtype, &ndims, dimids, &nattsp);
     if (result != NC_NOERR)
     {
-        zend_error(E_WARNING, "%sL error getting the var information\n         %s", __func__, nc_strerror(result));
+        zend_error(E_WARNING, "%s: error getting the var information\n         %s", __func__, nc_strerror(result));
         return result;
     }
 
