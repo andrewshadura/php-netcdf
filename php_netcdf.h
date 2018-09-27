@@ -1,7 +1,8 @@
 /*
     This file is part of netCDF for PHP.
 
-    Copyright (C) 2007-2009 Andrew O. Shadoura
+    Copyright (C) 2007-2009 Andrej Shadura
+    Copyright (C)      2010 Santi Oliveras
 
 This package is open source software; you can redistribute it and/or modify
 it under the terms of either:
