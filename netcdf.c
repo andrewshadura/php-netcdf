@@ -1849,7 +1849,8 @@ PHP_FUNCTION(nc_dump_header)
     char *nc_dimnames[NC_MAX_DIMS];
     int nc_dimlengths[NC_MAX_DIMS];
     int dimids[NC_MAX_VAR_DIMS];
-    zval *zheader, *subarray, *var_array, *dim_array, *att_array, *zvalue;
+    zval *zheader;
+    zval subarray, var_array, dim_array, att_array, zvalue;
     void *value = NULL;
 
     if ((ZEND_NUM_ARGS() != 2) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "lz", &ncid, &zheader) != SUCCESS))
@@ -1865,18 +1866,17 @@ PHP_FUNCTION(nc_dump_header)
 
     array_init(zheader);
 
-    /* Getting diemensions array */
-    ALLOC_INIT_ZVAL(subarray);
-    array_init(subarray);
+    /* Getting dimensions array */
+    array_init(&subarray);
     for (i = 0; i < nc_ndims; i++) {
         result = nc_inq_dim(ncid, i, name, &length);
         if (result != NC_NOERR) RETURN_NETCDF_ERROR("error getting dimension information (nc_inq_dim)", result);
 
         nc_dimnames[i] = estrdup(name);          /* we keep them for the variables */
         nc_dimlengths[i] = length;               /* we keep them for the variables */
-        add_assoc_long(subarray, name, length);
+        add_assoc_long(&subarray, name, length);
     }
-    add_assoc_zval(zheader, "dimensions", subarray);
+    add_assoc_zval(zheader, "dimensions", &subarray);
 
     if (unlimdimid != -1) {
         result = nc_inq_dim(ncid, unlimdimid, name, &length);
@@ -1887,8 +1887,7 @@ PHP_FUNCTION(nc_dump_header)
     }
 
     /* Getting variables array */
-    ALLOC_INIT_ZVAL(subarray);
-    array_init(subarray);
+    array_init(&subarray);
     for (i = 0; i < nc_nvars; i++) {
         result = nc_inq_varname(ncid, i, name);
         if (result != NC_NOERR)
@@ -1897,22 +1896,19 @@ PHP_FUNCTION(nc_dump_header)
         result = nc_inq_var(ncid, i, name, &var_type, &ndims, dimids, &nattsp);
         if (result != NC_NOERR) RETURN_NETCDF_ERROR("error getting variable information (nc_inq_var)", result);
 
-        ALLOC_INIT_ZVAL(var_array);
-        array_init(var_array);
+        array_init(&var_array);
 
-        add_assoc_string(var_array, "name", name);
-        add_assoc_string(var_array, "type", netcdf_types[var_type]);
+        add_assoc_string(&var_array, "name", name);
+        add_assoc_string(&var_array, "type", netcdf_types[var_type]);
 
-        ALLOC_INIT_ZVAL(dim_array);
-        array_init(dim_array);
+        array_init(&dim_array);
         for (j = 0; j < ndims; j++)
-            add_assoc_long(dim_array, nc_dimnames[dimids[j]], nc_dimlengths[dimids[j]]);
+            add_assoc_long(&dim_array, nc_dimnames[dimids[j]], nc_dimlengths[dimids[j]]);
 
-        add_assoc_zval(var_array, "dimensions", dim_array);
+        add_assoc_zval(&var_array, "dimensions", &dim_array);
 
         /* Getting attributes array of a variable */
-        ALLOC_INIT_ZVAL(att_array);
-        array_init(att_array);
+        array_init(&att_array);
         for (j = 0; j < nattsp; j++) {
             result = nc_inq_attname(ncid, i, j, name);
             if (result != NC_NOERR)
@@ -1930,20 +1926,18 @@ PHP_FUNCTION(nc_dump_header)
             if (result != NC_NOERR)
                 RETURN_NETCDF_ERROR("error getting attribute value (nc_get_att)", result);
 
-            ALLOC_INIT_ZVAL(zvalue);
-            assign_zval(at_type, at_len, value, zvalue);
+            assign_zval(at_type, at_len, value, &zvalue);
             efree(value);
-            add_assoc_zval(att_array, name, zvalue);
+            add_assoc_zval(&att_array, name, &zvalue);
         }
-        add_assoc_zval(var_array, "attributes", att_array);
+        add_assoc_zval(&var_array, "attributes", &att_array);
 
-        add_index_zval(subarray, i, var_array);
+        add_index_zval(&subarray, i, &var_array);
     }
-    add_assoc_zval(zheader, "variables", subarray);
+    add_assoc_zval(zheader, "variables", &subarray);
 
     /* Getting global attributes */
-    ALLOC_INIT_ZVAL(subarray);
-    array_init(subarray);
+    array_init(&subarray);
     for(i = 0; i < nc_ngatts; i++) {
         result = nc_inq_attname(ncid, NC_GLOBAL, i, name);
         if (result != NC_NOERR)
@@ -1960,12 +1954,11 @@ PHP_FUNCTION(nc_dump_header)
         if (result != NC_NOERR)
             RETURN_NETCDF_ERROR("error getting attribute value (nc_get_att)", result);
 
-        ALLOC_INIT_ZVAL(zvalue);
-        assign_zval(at_type, at_len, value, zvalue);
+        assign_zval(at_type, at_len, value, &zvalue);
         efree(value);
-        add_assoc_zval(subarray, name, zvalue);
+        add_assoc_zval(&subarray, name, &zvalue);
     }
-    add_assoc_zval(zheader, "global attributes", subarray);
+    add_assoc_zval(zheader, "global attributes", &subarray);
 
     RETURN_LONG(result);
 }
@@ -1984,7 +1977,7 @@ int add_values(int ncid, int varid, int nc_dimlengths[], int scs_lengths[], size
     size_t *tmp_start = NULL, *tmp_count = NULL;
     ptrdiff_t *tmp_stride = NULL;
     void *values = NULL;
-    zval *var_values = NULL;
+    zval var_values;
 
     result = nc_inq_var(ncid, varid, name, &xtype, &ndims, dimids, &nattsp);
     if (result != NC_NOERR)
@@ -1993,8 +1986,7 @@ int add_values(int ncid, int varid, int nc_dimlengths[], int scs_lengths[], size
         return result;
     }
 
-    ALLOC_INIT_ZVAL(var_values);
-    array_init(var_values);
+    array_init(&var_values);
 
     /* simple case. all values */
     if (start == NULL && count == NULL && stride == NULL)
@@ -2011,9 +2003,9 @@ int add_values(int ncid, int varid, int nc_dimlengths[], int scs_lengths[], size
             return -1;
         }
         result = nc_get_var(ncid, varid, values);
-        assign_zval(xtype, var_length, values, var_values);
+        assign_zval(xtype, var_length, values, &var_values);
         efree(values);
-        add_assoc_zval(zvalues, name, var_values);
+        add_assoc_zval(zvalues, name, &var_values);
         return NC_NOERR;
     }
 
@@ -2064,10 +2056,10 @@ int add_values(int ncid, int varid, int nc_dimlengths[], int scs_lengths[], size
     }
 
     result = nc_get_vars(ncid, varid, tmp_start, tmp_count, tmp_stride, values);
-    assign_zval(xtype, var_length, values, var_values);
+    assign_zval(xtype, var_length, values, &var_values);
     efree(values);
 
-    add_assoc_zval(zvalues, name, var_values);
+    add_assoc_zval(zvalues, name, &var_values);
     return result;
 }
 
