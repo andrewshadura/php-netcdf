@@ -564,13 +564,13 @@ PHP_METHOD(NetcdfDataset, _enddef)
 }
 /* }}} NetcdfDataset::_enddef */
 
-static function_entry php_netcdf_dataset_functions[] = {
+static zend_function_entry php_netcdf_dataset_functions[] = {
     PHP_ME(NetcdfDataset, __construct, NetcdfDataset____construct_args, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
     PHP_ME(NetcdfDataset, close, NetcdfDataset__close_args, ZEND_ACC_PUBLIC)
     PHP_ME(NetcdfDataset, sync, NetcdfDataset__sync_args, ZEND_ACC_PUBLIC)
     PHP_ME(NetcdfDataset, _redef, NetcdfDataset___redef_args, ZEND_ACC_PUBLIC)
     PHP_ME(NetcdfDataset, _enddef, NetcdfDataset___enddef_args, ZEND_ACC_PUBLIC)
-    { NULL, NULL, NULL }
+    PHP_FE_END
 };
 
 /* {{{ PHP_MINIT_FUNCTION
