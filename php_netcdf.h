@@ -26,12 +26,6 @@ it under the terms of either:
 
 /* $Id$ */
 
-#ifdef NC_FORMAT_NETCDF4
-#define CONFIG_NETCDF_4
-#else
-#define CONFIG_NETCDF_3
-#endif
-
 #ifndef PHP_NETCDF_H
 #define PHP_NETCDF_H
 
@@ -46,6 +40,13 @@ extern "C" {
 #ifdef HAVE_NETCDF
 
 #include <netcdf.h>
+
+#ifdef NC_FORMAT_NETCDF4
+#define CONFIG_NETCDF_4
+#else
+#define CONFIG_NETCDF_3
+#endif
+
 #include <php.h>
 #include <php_ini.h>
 #include <SAPI.h>
