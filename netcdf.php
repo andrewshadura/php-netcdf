@@ -12,14 +12,14 @@ foreach($functions as $func) {
 }
 echo "$br\n";
 $filename=$argv[1];
-echo "nc_open($filename,0)=".nc_open($filename,0,&$q)."\n";
+echo "nc_open($filename,0)=".nc_open($filename,0,$q)."\n";
 echo "ncid=".$q."\n";
-echo "nc_inq()=".nc_inq($q,&$ndims,&$nvars,&$ngatts,&$unlimdimid)."\n";
+echo "nc_inq()=".nc_inq($q,$ndims,$nvars,$ngatts,$unlimdimid)."\n";
 echo "ndims=".$ndims.",nvars=".$nvars.",ngatts=".$ngatts.",unlimdimid=".$unlimdimid,"\n";
 echo "Dimensions:\n";
 for ($i=0; $i<$ndims; $i++)
 {
-  nc_inq_dim($q, $i, &$name, &$length);
+  nc_inq_dim($q, $i, $name, $length);
   echo "\t$name     $i       $length\n";
   $dim_names[$i] = $name;
 }
@@ -31,7 +31,7 @@ for ($i=0; $i<$nvars; $i++)
   nc_inq_varndims($q, $i, &$dims);
   nc_inq_vardimid($q, $i, &$dimids);
   nc_inq_varnatts($q, $i, &$natts); */
-  nc_inq_var($q, $i, &$name, &$type, &$dims, &$dimids, &$natts);
+  nc_inq_var($q, $i, $name, $type, $dims, $dimids, $natts);
   $var_names[$i] = $name;
   $var_num_dims[$i] = $dims;
 
@@ -42,8 +42,8 @@ for ($i=0; $i<$nvars; $i++)
   
   $var_natts = "";
   for($j=0; $j<$natts; $j ++){
-    nc_inq_attname($q, $i, $j, &$n);
-	nc_get_att($q, $i, $n, &$val);
+    nc_inq_attname($q, $i, $j, $n);
+	nc_get_att($q, $i, $n, $val);
 	if(is_array($val)){
       $var_natts .= "            $n : (".implode(' , ',$val)." )\n";
 	}
@@ -58,8 +58,8 @@ echo "Global attributes:\n";
 for ($i=0; $i<$ngatts; $i++)
 {
   //nc_inq_attname($q, -1, $i, &$name);
-  nc_inq_attname($q, NC_GLOBAL, $i, &$name);
-  nc_get_att($q, NC_GLOBAL, $name, &$val);
+  nc_inq_attname($q, NC_GLOBAL, $i, $name);
+  nc_get_att($q, NC_GLOBAL, $name, $val);
 
   echo "\t$name = $val\n";
 }
@@ -67,16 +67,16 @@ for ($i=0; $i<$ngatts; $i++)
 for ($i=0; $i<$nvars; $i++)
 {
   if($var_num_dims[$i]==1){
-    nc_get_var1($q, $i, array(0), &$val);
-    nc_get_vara($q, $i, array(0), array(1), &$values);	
+    nc_get_var1($q, $i, array(0), $val);
+    nc_get_vara($q, $i, array(0), array(1), $values);	
   }
   elseif($var_num_dims[$i]==2){
-    nc_get_var1($q, $i, array(0,0), &$val);
-    nc_get_vara($q, $i, array(0,0), array(1,1), &$values);	
+    nc_get_var1($q, $i, array(0,0), $val);
+    nc_get_vara($q, $i, array(0,0), array(1,1), $values);	
   }
   if($var_num_dims[$i]==3){
-    nc_get_var1($q, $i, array(0,0,0), &$val);
-    nc_get_vara($q, $i, array(0,0,0), array(1,1,1), &$values);
+    nc_get_var1($q, $i, array(0,0,0), $val);
+    nc_get_vara($q, $i, array(0,0,0), array(1,1,1), $values);
   }
   echo "$i: {$var_names[$i]}(0,0) = $val\n";
   if(is_array($values))
@@ -100,16 +100,16 @@ else echo "values = $values\n\n";
 }*/
 
 echo "\nHEADER:\n";
-nc_dump_header($q,&$header);
+nc_dump_header($q,$header);
 print_r($header);
 
 echo "\nVALUES OF {$var_names[0]},{$var_names[1]}:\n";
-nc_get_values($q, &$allvalues,array($var_names[0],$var_names[1]));
+nc_get_values($q, $allvalues,array($var_names[0],$var_names[1]));
 print_r($allvalues);
 
 echo "\nVALUES OF FIRST 2 blocks:\n";
 for($i=0;$i<2;$i++){
-	nc_get_values($q, &$allvalues,null, array($i), array(1),null);
+	nc_get_values($q, $allvalues,null, array($i), array(1),null);
 	print_r($allvalues);
 }
 echo "nc_close()=".nc_close($q)."\n";
