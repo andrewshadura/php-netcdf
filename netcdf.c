@@ -76,7 +76,7 @@ void assign_zval(nc_type at_type, size_t at_len, void *value, zval *zvalue) {
     if (at_type == NC_CHAR) {
         chars = (char *)value;
         chars[at_len] = 0;
-        ZVAL_STRING(zvalue, chars,1);
+        ZVAL_STRING(zvalue, chars);
         return;
     }
 
@@ -125,7 +125,7 @@ void assign_zval(nc_type at_type, size_t at_len, void *value, zval *zvalue) {
 
 int assign_value(nc_type at_type, size_t at_len, zval *zvalue, void *value){
     int i;
-    zval **data;
+    zval *data;
     HashTable *arr_hash;
     HashPosition pointer;
 
@@ -164,38 +164,38 @@ int assign_value(nc_type at_type, size_t at_len, zval *zvalue, void *value){
     }
 
     for (zend_hash_internal_pointer_reset_ex(arr_hash, &pointer), i = 0;
-        (i < at_len) && (zend_hash_get_current_data_ex(arr_hash, (void**) &data, &pointer) == SUCCESS);
+        (i < at_len) && ((data = zend_hash_get_current_data_ex(arr_hash, &pointer)) != NULL);
         zend_hash_move_forward_ex(arr_hash, &pointer), i++)
     {
        switch(at_type)
        {
             case NC_BYTE:
-                *(((char *)value) + i) = Z_LVAL_PP(data);
+                *(((char *)value) + i) = Z_LVAL_P(data);
                 break;
             case NC_SHORT:
-                *(((short *)value) + i) = Z_LVAL_PP(data);
+                *(((short *)value) + i) = Z_LVAL_P(data);
                 break;
             case NC_INT:
-                *(((int *)value) + i) = Z_LVAL_PP(data);
+                *(((int *)value) + i) = Z_LVAL_P(data);
                 break;
             case NC_FLOAT:
-                *(((float *)value) + i) = Z_DVAL_PP(data);
+                *(((float *)value) + i) = Z_DVAL_P(data);
                 break;
             case NC_DOUBLE:
-                *(((double *)value) + i) = Z_DVAL_PP(data);
+                *(((double *)value) + i) = Z_DVAL_P(data);
         }
     }
     return 1;
 }
 
 void *get_values_from_array(nc_type at_type, zval *zvalue){
-    int i;
-    zval **data;
+    uint i;
+    zval *data;
     HashTable *arr_hash;
     HashPosition pointer;
     void *values;
 
-    arr_hash = Z_ARRVAL_P(zvalue);
+    arr_hash = HASH_OF(zvalue);
 
     values = allocate_space(at_type, zend_hash_num_elements(arr_hash));
     if (values == NULL)
@@ -205,25 +205,25 @@ void *get_values_from_array(nc_type at_type, zval *zvalue){
     }
 
     for (zend_hash_internal_pointer_reset_ex(arr_hash, &pointer), i = 0;
-        zend_hash_get_current_data_ex(arr_hash, (void**) &data, &pointer) == SUCCESS;
+        data = zend_hash_get_current_data_ex(arr_hash, &pointer) != NULL;
         zend_hash_move_forward_ex(arr_hash, &pointer), i++)
     {
        switch(at_type)
        {
             case NC_BYTE:
-                *(((char *)values) + i) = Z_LVAL_PP(data);
+                *(((char *)values) + i) = Z_LVAL_P(data);
                 break;
             case NC_SHORT:
-                *(((short *)values) + i) = Z_LVAL_PP(data);
+                *(((short *)values) + i) = Z_LVAL_P(data);
                 break;
             case NC_INT:
-                *(((int *)values) + i) = Z_LVAL_PP(data);
+                *(((int *)values) + i) = Z_LVAL_P(data);
                 break;
             case NC_FLOAT:
-                *(((float *)values) + i) = Z_DVAL_PP(data);
+                *(((float *)values) + i) = Z_DVAL_P(data);
                 break;
             case NC_DOUBLE:
-                *(((double *)values) + i) = Z_DVAL_PP(data);
+                *(((double *)values) + i) = Z_DVAL_P(data);
         }
     }
     return values;
@@ -458,8 +458,8 @@ PHP_METHOD(NetcdfDataset, __construct)
             RETURN_FALSE;
         }
         add_property_long(getThis(), "_grpid", grpid);
-        add_property_string(getThis(), "path", "/", 1);
-        add_property_string(getThis(), "filename", path, 1);
+        add_property_string(getThis(), "path", "/");
+        add_property_string(getThis(), "filename", path);
     } while (0);
 }
 /* }}} NetcdfDataset::__construct */
@@ -1006,7 +1006,7 @@ PHP_FUNCTION(nc_inq_dim)
     }
 
     result = nc_inq_dim(ncid, dimid, name, &length);
-    ZVAL_STRING(zname, name, 1);
+    ZVAL_STRING(zname, name);
     ZVAL_LONG(zlength, length);
 
     RETURN_LONG(result);
@@ -1028,7 +1028,7 @@ PHP_FUNCTION(nc_inq_dimname)
     }
 
     result = nc_inq_dimname(ncid, dimid, name);
-    ZVAL_STRING(zname, name, 1);
+    ZVAL_STRING(zname, name);
 
     RETURN_LONG(result);
 }
@@ -1085,7 +1085,7 @@ PHP_FUNCTION(nc_def_var)
     int dimids[NC_MAX_VAR_DIMS];
     long result;
     zval *zdimids, *zvarid;
-    zval **data;
+    zval *data;
     HashTable *arr_hash;
     HashPosition pointer;
 
@@ -1097,11 +1097,11 @@ PHP_FUNCTION(nc_def_var)
 
     arr_hash = Z_ARRVAL_P(zdimids);
     for (zend_hash_internal_pointer_reset_ex(arr_hash, &pointer);
-        (i<ndims) && (zend_hash_get_current_data_ex(arr_hash, (void**) &data, &pointer) == SUCCESS); i++)
+        (i<ndims) && ((data = zend_hash_get_current_data_ex(arr_hash, &pointer)) != NULL); i++)
     {
-        if (Z_TYPE_PP(data) == IS_LONG)
+        if (Z_TYPE_P(data) == IS_LONG)
         {
-            dimids[i] = Z_LVAL_PP(data);
+            dimids[i] = Z_LVAL_P(data);
         }
         zend_hash_move_forward_ex(arr_hash, &pointer);
     }
@@ -1137,7 +1137,7 @@ PHP_FUNCTION(nc_inq_var)
         add_index_long(zdimids, i, dimids[i]);
     }
 
-    ZVAL_STRING(zname, name, 1);
+    ZVAL_STRING(zname, name);
     ZVAL_LONG(zxtype, xtype);
     ZVAL_LONG(zndims, ndims);
     ZVAL_LONG(znattsp, nattsp);
@@ -1182,7 +1182,7 @@ PHP_FUNCTION(nc_inq_varname)
     }
 
     result = nc_inq_varname(ncid, varid, name);
-    ZVAL_STRING(zname, name, 1);
+    ZVAL_STRING(zname, name);
 
     RETURN_LONG(result);
 }
@@ -1295,7 +1295,7 @@ PHP_FUNCTION(nc_inq_attname)
     }
 
     result = nc_inq_attname(ncid, varid, attnum, name);
-    ZVAL_STRING(zname, name, 1);
+    ZVAL_STRING(zname, name);
 
     RETURN_LONG(result);
 }
@@ -1761,7 +1761,8 @@ PHP_FUNCTION(nc_strerror)
 
     result = (char *) nc_strerror(ncerr);
 
-    RETURN_STRING(result, 1);
+    zend_string *str = zend_string_init(result, strlen(result), 0);
+    RETURN_STR(str);
 }
 /* }}} */
 
@@ -1780,7 +1781,8 @@ PHP_FUNCTION(nc_inq_libvers)
 
     result = (char *) nc_inq_libvers();
 
-    RETURN_STRING(result, 1);
+    zend_string *str = zend_string_init(result, strlen(result), 0);
+    RETURN_STR(str);
 }
 /* }}} */
 
@@ -1800,7 +1802,8 @@ PHP_FUNCTION(nc_strtype)
 
     result = (char *) netcdf_types[xtype];
 
-    RETURN_STRING(result, 1);
+    zend_string *str = zend_string_init(result, strlen(result), 0);
+    RETURN_STR(str);
 }
 /* }}} */
 
@@ -1893,7 +1896,7 @@ PHP_FUNCTION(nc_dump_header)
         if (result != NC_NOERR)
             RETURN_NETCDF_ERROR("error getting dimension information (nc_inq_dim)", result);
 
-        add_assoc_string(zheader, "unlimdim", name, 1);
+        add_assoc_string(zheader, "unlimdim", name);
     }
 
     /* Getting variables array */
@@ -1910,8 +1913,8 @@ PHP_FUNCTION(nc_dump_header)
         ALLOC_INIT_ZVAL(var_array);
         array_init(var_array);
 
-        add_assoc_string(var_array, "name", name, 1);
-        add_assoc_string(var_array, "type", netcdf_types[var_type], 1);
+        add_assoc_string(var_array, "name", name);
+        add_assoc_string(var_array, "type", netcdf_types[var_type]);
 
         ALLOC_INIT_ZVAL(dim_array);
         array_init(dim_array);
@@ -2108,7 +2111,7 @@ PHP_FUNCTION(nc_get_values)
     size_t *start = NULL, *count = NULL;
     ptrdiff_t *stride = NULL;
     zval *zvalues, *zvar_names = NULL, *zstart = NULL, *zcount = NULL, *zstride = NULL;
-    zval **data;
+    zval *data;
     HashTable *arr_hash;
     HashPosition pointer;
 
@@ -2138,13 +2141,13 @@ PHP_FUNCTION(nc_get_values)
         if (varids == NULL) RETURN_ERROR("error allocating memory to get var_names");
 
         for (zend_hash_internal_pointer_reset_ex(arr_hash, &pointer), var_count = 0;
-            zend_hash_get_current_data_ex(arr_hash, (void**) &data, &pointer) == SUCCESS;
+            (data = zend_hash_get_current_data_ex(arr_hash, &pointer)) != NULL;
             zend_hash_move_forward_ex(arr_hash, &pointer))
         {
-            if (Z_TYPE_PP(data) == IS_STRING)
+            if (Z_TYPE_P(data) == IS_STRING)
             {
-                result = nc_inq_varid(ncid, Z_STRVAL_PP(data), &varid);
-                if (result != NC_NOERR) php_error(E_WARNING, "%s: variable \"%s\" is not in the netcdf file", __func__, Z_STRVAL_PP(data));
+                result = nc_inq_varid(ncid, Z_STRVAL_P(data), &varid);
+                if (result != NC_NOERR) php_error(E_WARNING, "%s: variable \"%s\" is not in the netcdf file", __func__, Z_STRVAL_P(data));
                 else varids[var_count++] = varid;
             }
         }
@@ -2159,11 +2162,11 @@ PHP_FUNCTION(nc_get_values)
         scs_lengths[0] = zend_hash_num_elements(arr_hash);
 
         for (zend_hash_internal_pointer_reset_ex(arr_hash, &pointer), i = 0;
-            zend_hash_get_current_data_ex(arr_hash, (void**) &data, &pointer) == SUCCESS;
+            (data = zend_hash_get_current_data_ex(arr_hash, &pointer)) != NULL;
             zend_hash_move_forward_ex(arr_hash, &pointer), i++)
         {
-            if (Z_TYPE_PP(data) == IS_LONG)
-                start[i] = Z_LVAL_PP(data);
+            if (Z_TYPE_P(data) == IS_LONG)
+                start[i] = Z_LVAL_P(data);
         }
     }
 
@@ -2175,11 +2178,11 @@ PHP_FUNCTION(nc_get_values)
         scs_lengths[1] = zend_hash_num_elements(arr_hash);
 
         for (zend_hash_internal_pointer_reset_ex(arr_hash, &pointer), i = 0;
-            zend_hash_get_current_data_ex(arr_hash, (void**) &data, &pointer) == SUCCESS;
+            (data = zend_hash_get_current_data_ex(arr_hash, &pointer)) != NULL;
             zend_hash_move_forward_ex(arr_hash, &pointer), i++)
         {
-            if (Z_TYPE_PP(data) == IS_LONG)
-                count[i] = Z_LVAL_PP(data);
+            if (Z_TYPE_P(data) == IS_LONG)
+                count[i] = Z_LVAL_P(data);
         }
     }
 
@@ -2191,11 +2194,11 @@ PHP_FUNCTION(nc_get_values)
         scs_lengths[2] = zend_hash_num_elements(arr_hash);
 
         for (zend_hash_internal_pointer_reset_ex(arr_hash, &pointer), i = 0;
-            zend_hash_get_current_data_ex(arr_hash, (void**) &data, &pointer) == SUCCESS;
+            (data = zend_hash_get_current_data_ex(arr_hash, &pointer)) != NULL;
             zend_hash_move_forward_ex(arr_hash, &pointer), i++)
         {
-            if (Z_TYPE_PP(data) == IS_LONG)
-                stride[i] = Z_LVAL_PP(data);
+            if (Z_TYPE_P(data) == IS_LONG)
+                stride[i] = Z_LVAL_P(data);
         }
     }
 
