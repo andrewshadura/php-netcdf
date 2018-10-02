@@ -694,16 +694,9 @@ PHP_FUNCTION(nc_create)
     int ncid;
     zval *zncid;
 
-    if ((ZEND_NUM_ARGS() != 3) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "slz", &path, &path_len, &cmode, &zncid) != SUCCESS))
+    if ((ZEND_NUM_ARGS() != 3) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "slz/", &path, &path_len, &cmode, &zncid) != SUCCESS))
     {
         WRONG_PARAM_COUNT;
-    }
-
-    /* check for netCDF ID being passed by reference */
-    if (!PZVAL_IS_REF(zncid))
-    {
-        ISSUE_WARNING("Variable for netCDF ID should be passed by reference");
-        RETURN_NULL();
     }
 
     result = nc_create(path, cmode, &ncid);
@@ -722,16 +715,9 @@ PHP_FUNCTION(nc_open)
     int ncid;
     zval *zncid;
 
-    if ((ZEND_NUM_ARGS() != 3) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "slz", &path, &path_len, &mode, &zncid) != SUCCESS))
+    if ((ZEND_NUM_ARGS() != 3) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "slz/", &path, &path_len, &mode, &zncid) != SUCCESS))
     {
         WRONG_PARAM_COUNT;
-    }
-
-    /* check for netCDF ID being passed by reference */
-    if (!PZVAL_IS_REF(zncid))
-    {
-        ISSUE_WARNING("Variable for netCDF ID should be passed by reference");
-        RETURN_NULL();
     }
 
     result = nc_open(path, mode, &ncid);
