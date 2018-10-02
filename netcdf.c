@@ -254,7 +254,7 @@ int nc_get_var(int ncid, int varid, void *values) {
     return 2;
 }
 
-int nc_put_var(int ncid, int  varid,void *values)
+int nc_put_var(int ncid, int varid, const void *values)
 {
     int result;
     nc_type xtype;
