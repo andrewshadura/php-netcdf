@@ -996,7 +996,7 @@ PHP_FUNCTION(nc_inq_dimid)
 PHP_FUNCTION(nc_inq_dim)
 {
     long ncid, dimid, result;
-    int length;
+    size_t length;
     char name[NC_MAX_NAME];
     zval *zname, *zlength;
 
@@ -1040,7 +1040,7 @@ PHP_FUNCTION(nc_inq_dimname)
 PHP_FUNCTION(nc_inq_dimlen)
 {
     long ncid, dimid, result;
-    int length;
+    size_t length;
     zval *zlength;
 
     if ((ZEND_NUM_ARGS() != 3) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "llz", &ncid, &dimid, &zlength) != SUCCESS))
@@ -1384,8 +1384,8 @@ PHP_FUNCTION(nc_get_var)
     long ncid, varid, result;
     char name[NC_MAX_NAME];
     int dimids[NC_MAX_VAR_DIMS];
-    int ndims, nattsp, dim_length, i;
-    size_t var_length = 1;
+    int ndims, nattsp, i;
+    size_t dim_length, var_length = 1;
     nc_type xtype;
     zval *zvalues;
     void *values = NULL;
@@ -1546,8 +1546,8 @@ PHP_FUNCTION(nc_put_var)
     long ncid, varid, result;
     char name[NC_MAX_NAME];
     int dimids[NC_MAX_VAR_DIMS];
-    int ndims, nattsp, dim_length, i;
-    size_t var_length = 1;
+    int ndims, nattsp, i;
+    size_t dim_length, var_length = 1;
     nc_type xtype;
     zval *zvalues;
     void *values = NULL;
@@ -1560,8 +1560,8 @@ PHP_FUNCTION(nc_put_var)
     result = nc_inq_var(ncid, varid, name, &xtype, &ndims, dimids, &nattsp);
     if (result != NC_NOERR) RETURN_NETCDF_ERROR("error getting the var information", result);
 
-    for(i=0; i<ndims; i++){
-        result=nc_inq_dimlen(ncid, dimids[i], &dim_length);
+    for(i = 0; i < ndims; i++){
+        result = nc_inq_dimlen(ncid, dimids[i], &dim_length);
         if (result != NC_NOERR) RETURN_NETCDF_ERROR("error getting the dimension information", result);
         var_length *= dim_length;
     }
@@ -1856,7 +1856,8 @@ PHP_FUNCTION(nc_strtype)
 PHP_FUNCTION(nc_dump_header)
 {
     long ncid, result;
-    int i, j, nc_ndims, nc_nvars, nc_ngatts, unlimdimid, length, ndims, nattsp, at_len;
+    int i, j, nc_ndims, nc_nvars, nc_ngatts, unlimdimid, ndims, nattsp;
+    size_t at_len, length;
     nc_type var_type, at_type;
     char name[NC_MAX_NAME];
     char *nc_dimnames[NC_MAX_DIMS];
@@ -2104,7 +2105,8 @@ int add_values(int ncid, int varid, int nc_dimlengths[], int scs_lengths[], size
 PHP_FUNCTION(nc_get_values)
 {
     long ncid, result;
-    int i, j, nc_ndims, nc_nvars, nc_ngatts, unlimdimid, length;
+    int i, j, nc_ndims, nc_nvars, nc_ngatts, unlimdimid;
+    size_t length;
     int nc_dimlengths[NC_MAX_DIMS];
     int scs_lengths[] = {0, 0, 0};
     int *varids = NULL, varid, var_count;
