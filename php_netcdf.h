@@ -69,7 +69,7 @@ extern zend_module_entry netcdf_module_entry;
 
 #define FREE_RESOURCE(resource) zend_list_delete(Z_LVAL_P(resource))
 
-#define PROP_GET_LONG(name)    Z_LVAL_P(zend_read_property(_this_ce, _this_zval, #name, strlen(#name), 1 TSRMLS_CC))
+#define PROP_GET_LONG(name)    Z_LVAL_P(({zval rv; zend_read_property(_this_ce, _this_zval, #name, strlen(#name), 1, &rv TSRMLS_CC);}))
 #define PROP_SET_LONG(name, l) zend_update_property_long(_this_ce, _this_zval, #name, strlen(#name), l TSRMLS_CC)
 
 #define PROP_GET_DOUBLE(name)    Z_DVAL_P(zend_read_property(_this_ce, _this_zval, #name, strlen(#name), 1 TSRMLS_CC))
