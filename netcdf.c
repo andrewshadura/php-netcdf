@@ -205,7 +205,7 @@ void *get_values_from_array(nc_type at_type, zval *zvalue){
     }
 
     for (zend_hash_internal_pointer_reset_ex(arr_hash, &pointer), i = 0;
-        data = zend_hash_get_current_data_ex(arr_hash, &pointer) != NULL;
+        (data = zend_hash_get_current_data_ex(arr_hash, &pointer)) != NULL;
         zend_hash_move_forward_ex(arr_hash, &pointer), i++)
     {
        switch(at_type)
