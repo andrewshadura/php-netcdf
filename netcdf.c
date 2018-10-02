@@ -280,6 +280,124 @@ int nc_put_var(int ncid, int varid, const void *values)
 }
 #endif
 
+ZEND_BEGIN_ARG_INFO_EX(arginfo_nc_create, 0, 0, 3)
+    ZEND_ARG_TYPE_INFO(0, path, IS_STRING, 0)
+    ZEND_ARG_TYPE_INFO(0, mode, IS_LONG, 0)
+    ZEND_ARG_TYPE_INFO(1, ncid, IS_LONG, 1)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_nc_open, 0, 0, 3)
+    ZEND_ARG_TYPE_INFO(0, path, IS_STRING, 0)
+    ZEND_ARG_TYPE_INFO(0, mode, IS_LONG, 0)
+    ZEND_ARG_TYPE_INFO(1, ncid, IS_LONG, 1)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_nc_inq, 0, 0, 5)
+    ZEND_ARG_TYPE_INFO(0, ncid, IS_LONG, 0)
+    ZEND_ARG_TYPE_INFO(1, ndims, IS_LONG, 1)
+    ZEND_ARG_TYPE_INFO(1, nvars, IS_LONG, 1)
+    ZEND_ARG_TYPE_INFO(1, ngatts, IS_LONG, 1)
+    ZEND_ARG_TYPE_INFO(1, unlimdimid, IS_LONG, 1)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_nc_inq_ndims, 0, 0, 2)
+    ZEND_ARG_TYPE_INFO(0, ncid, IS_LONG, 0)
+    ZEND_ARG_TYPE_INFO(1, ndims, IS_LONG, 1)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_nc_inq_nvars, 0, 0, 2)
+    ZEND_ARG_TYPE_INFO(0, ncid, IS_LONG, 0)
+    ZEND_ARG_TYPE_INFO(1, nvars, IS_LONG, 1)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_nc_inq_natts, 0, 0, 2)
+    ZEND_ARG_TYPE_INFO(0, ncid, IS_LONG, 0)
+    ZEND_ARG_TYPE_INFO(1, ngatts, IS_LONG, 1)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_nc_inq_unlimdim, 0, 0, 2)
+    ZEND_ARG_TYPE_INFO(0, ncid, IS_LONG, 0)
+    ZEND_ARG_TYPE_INFO(1, unlimdimid, IS_LONG, 1)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_nc_set_fill, 0, 0, 3)
+    ZEND_ARG_TYPE_INFO(0, ncid, IS_LONG, 0)
+    ZEND_ARG_TYPE_INFO(0, fillmode, IS_LONG, 0)
+    ZEND_ARG_TYPE_INFO(1, old_mode, IS_LONG, 1)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_nc_def_dim, 0, 0, 4)
+    ZEND_ARG_TYPE_INFO(0, ncid, IS_LONG, 0)
+    ZEND_ARG_TYPE_INFO(0, name, IS_STRING, 0)
+    ZEND_ARG_TYPE_INFO(0, len, IS_LONG, 0)
+    ZEND_ARG_TYPE_INFO(1, dimid, IS_LONG, 1)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_nc_inq_dimid, 0, 0, 3)
+    ZEND_ARG_TYPE_INFO(0, ncid, IS_LONG, 0)
+    ZEND_ARG_TYPE_INFO(0, name, IS_STRING, 0)
+    ZEND_ARG_TYPE_INFO(1, dimid, IS_LONG, 1)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_nc_inq_dim, 0, 0, 4)
+    ZEND_ARG_TYPE_INFO(0, ncid, IS_LONG, 0)
+    ZEND_ARG_TYPE_INFO(0, dimid, IS_LONG, 0)
+    ZEND_ARG_TYPE_INFO(1, name, IS_STRING, 1)
+    ZEND_ARG_TYPE_INFO(1, length, IS_LONG, 1)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_nc_inq_dimname, 0, 0, 3)
+    ZEND_ARG_TYPE_INFO(0, ncid, IS_LONG, 0)
+    ZEND_ARG_TYPE_INFO(0, dimid, IS_LONG, 0)
+    ZEND_ARG_TYPE_INFO(1, name, IS_STRING, 1)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_nc_inq_dimlen, 0, 0, 3)
+    ZEND_ARG_TYPE_INFO(0, ncid, IS_LONG, 0)
+    ZEND_ARG_TYPE_INFO(0, dimid, IS_LONG, 0)
+    ZEND_ARG_TYPE_INFO(1, length, IS_LONG, 1)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_nc_inq_var, 0, 0, 7)
+    ZEND_ARG_TYPE_INFO(0, ncid, IS_LONG, 0)
+    ZEND_ARG_TYPE_INFO(0, varid, IS_LONG, 1)
+    ZEND_ARG_TYPE_INFO(1, name, IS_STRING, 1)
+    ZEND_ARG_TYPE_INFO(1, xtypep, IS_LONG, 1)
+    ZEND_ARG_TYPE_INFO(1, ndimsp, IS_LONG, 1)
+    ZEND_ARG_INFO     (1, dimidsp)
+    ZEND_ARG_TYPE_INFO(1, nattsp, IS_LONG, 1)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_nc_inq_attname, 0, 0, 4)
+    ZEND_ARG_TYPE_INFO(0, ncid, IS_LONG, 0)
+    ZEND_ARG_TYPE_INFO(0, varid, IS_LONG, 0)
+    ZEND_ARG_TYPE_INFO(0, attnum, IS_LONG, 0)
+    ZEND_ARG_TYPE_INFO(1, name, IS_STRING, 1)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_nc_get_att, 0, 0, 4)
+    ZEND_ARG_TYPE_INFO(0, ncid, IS_LONG, 0)
+    ZEND_ARG_TYPE_INFO(0, varid, IS_LONG, 0)
+    ZEND_ARG_TYPE_INFO(0, name, IS_STRING, 0)
+    ZEND_ARG_INFO     (1, value)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_nc_get_var1, 0, 0, 4)
+    ZEND_ARG_TYPE_INFO(0, ncid, IS_LONG, 0)
+    ZEND_ARG_TYPE_INFO(0, varid, IS_LONG, 0)
+    ZEND_ARG_INFO     (0, indexp)
+    ZEND_ARG_INFO     (1, value)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_nc_get_vara, 0, 0, 4)
+    ZEND_ARG_TYPE_INFO(0, ncid, IS_LONG, 0)
+    ZEND_ARG_TYPE_INFO(0, varid, IS_LONG, 0)
+    ZEND_ARG_INFO     (0, start)
+    ZEND_ARG_INFO     (0, count)
+    ZEND_ARG_INFO     (1, values)
+ZEND_END_ARG_INFO()
+
+
 /* {{{ netcdf_functions[]
  *
  * Every user visible function must have an entry in netcdf_functions[].
@@ -291,44 +409,44 @@ zend_function_entry netcdf_functions[] = {
 
     PHP_FE(nc_strtype, NULL)
 
-    PHP_FE(nc_create, NULL)
-    PHP_FE(nc_open, NULL)
+    PHP_FE(nc_create, arginfo_nc_create)
+    PHP_FE(nc_open, arginfo_nc_open)
     PHP_FE(nc_redef, NULL)
     PHP_FE(nc_enddef, NULL)
     PHP_FE(nc_close, NULL)
 
-    PHP_FE(nc_inq, NULL)
-    PHP_FE(nc_inq_ndims, NULL)
-    PHP_FE(nc_inq_nvars, NULL)
-    PHP_FE(nc_inq_natts, NULL)
-    PHP_FE(nc_inq_unlimdim, NULL)
+    PHP_FE(nc_inq, arginfo_nc_inq)
+    PHP_FE(nc_inq_ndims, arginfo_nc_inq_ndims)
+    PHP_FE(nc_inq_nvars, arginfo_nc_inq_nvars)
+    PHP_FE(nc_inq_natts, arginfo_nc_inq_natts)
+    PHP_FE(nc_inq_unlimdim, arginfo_nc_inq_unlimdim)
 
     PHP_FE(nc_sync, NULL)
     PHP_FE(nc_abort, NULL)
 
-    PHP_FE(nc_set_fill, NULL)
+    PHP_FE(nc_set_fill, arginfo_nc_set_fill)
 
-    PHP_FE(nc_def_dim, NULL)
-    PHP_FE(nc_inq_dimid, NULL)
+    PHP_FE(nc_def_dim, arginfo_nc_def_dim)
+    PHP_FE(nc_inq_dimid, arginfo_nc_inq_dimid)
 
-    PHP_FE(nc_inq_dim, NULL)
-    PHP_FE(nc_inq_dimname, NULL)
-    PHP_FE(nc_inq_dimlen, NULL)
+    PHP_FE(nc_inq_dim, arginfo_nc_inq_dim)
+    PHP_FE(nc_inq_dimname, arginfo_nc_inq_dimname)
+    PHP_FE(nc_inq_dimlen, arginfo_nc_inq_dimlen)
 
     PHP_FE(nc_rename_dim, NULL)
 
     PHP_FE(nc_def_var, NULL)
-    PHP_FE(nc_inq_var, NULL)
+    PHP_FE(nc_inq_var, arginfo_nc_inq_var)
     PHP_FE(nc_inq_varname, NULL)
     PHP_FE(nc_inq_vartype, NULL)
     PHP_FE(nc_inq_varndims, NULL)
     PHP_FE(nc_inq_vardimid, NULL)
     PHP_FE(nc_inq_varnatts, NULL)
-    PHP_FE(nc_inq_attname, NULL)
-    PHP_FE(nc_get_att, NULL)
-    PHP_FE(nc_get_var1, NULL)
+    PHP_FE(nc_inq_attname, arginfo_nc_inq_attname)
+    PHP_FE(nc_get_att, arginfo_nc_get_att)
+    PHP_FE(nc_get_var1, arginfo_nc_get_var1)
     PHP_FE(nc_get_var, NULL)
-    PHP_FE(nc_get_vara, NULL)
+    PHP_FE(nc_get_vara, arginfo_nc_get_vara)
     PHP_FE(nc_get_vars, NULL)
 
     PHP_FE(nc_put_var,NULL)
@@ -786,7 +904,7 @@ PHP_FUNCTION(nc_inq)
     int ndims, nvars, ngatts, unlimdimid;
     zval *zndims, *znvars, *zngatts, *zunlimdimid;
 
-    if ((ZEND_NUM_ARGS() != 5) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "lzzzz", &ncid, &zndims, &znvars, &zngatts, &zunlimdimid) != SUCCESS))
+    if ((ZEND_NUM_ARGS() != 5) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "lz/z/z/z/", &ncid, &zndims, &znvars, &zngatts, &zunlimdimid) != SUCCESS))
     {
         WRONG_PARAM_COUNT;
     }
@@ -809,7 +927,7 @@ PHP_FUNCTION(nc_inq_ndims)
     int ndims;
     zval *zndims;
 
-    if ((ZEND_NUM_ARGS() != 2) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "lz", &ncid, &zndims) != SUCCESS))
+    if ((ZEND_NUM_ARGS() != 2) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "lz/", &ncid, &zndims) != SUCCESS))
     {
         WRONG_PARAM_COUNT;
     }
@@ -849,7 +967,7 @@ PHP_FUNCTION(nc_inq_natts)
     int ngatts;
     zval *zngatts;
 
-    if ((ZEND_NUM_ARGS() != 2) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "lz", &ncid, &zngatts) != SUCCESS)) {
+    if ((ZEND_NUM_ARGS() != 2) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "lz/", &ncid, &zngatts) != SUCCESS)) {
         WRONG_PARAM_COUNT;
     }
 
@@ -922,7 +1040,7 @@ PHP_FUNCTION(nc_set_fill)
     int old_mode;
     zval *zold_mode;
 
-    if ((ZEND_NUM_ARGS() != 3) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "llz", &ncid, &fillmode, &zold_mode) != SUCCESS))
+    if ((ZEND_NUM_ARGS() != 3) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "llz/", &ncid, &fillmode, &zold_mode) != SUCCESS))
     {
         WRONG_PARAM_COUNT;
     }
@@ -943,7 +1061,7 @@ PHP_FUNCTION(nc_def_dim)
     char *name = NULL;
     zval *zdimid;
 
-    if ((ZEND_NUM_ARGS() != 4) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "lslz", &ncid, &name, &namelen, &len, &zdimid) != SUCCESS))
+    if ((ZEND_NUM_ARGS() != 4) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "lslz/", &ncid, &name, &namelen, &len, &zdimid) != SUCCESS))
     {
         WRONG_PARAM_COUNT;
     }
@@ -964,7 +1082,7 @@ PHP_FUNCTION(nc_inq_dimid)
     char *name = NULL;
     zval *zdimid;
 
-    if ((ZEND_NUM_ARGS() != 3) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "lsz", &ncid, &name, &namelen, &zdimid) != SUCCESS))
+    if ((ZEND_NUM_ARGS() != 3) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "lsz/", &ncid, &name, &namelen, &zdimid) != SUCCESS))
     {
         WRONG_PARAM_COUNT;
     }
@@ -986,7 +1104,7 @@ PHP_FUNCTION(nc_inq_dim)
     char name[NC_MAX_NAME];
     zval *zname, *zlength;
 
-    if ((ZEND_NUM_ARGS() != 4) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "llzz", &ncid, &dimid, &zname, &zlength) != SUCCESS))
+    if ((ZEND_NUM_ARGS() != 4) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "llz/z/", &ncid, &dimid, &zname, &zlength) != SUCCESS))
     {
         WRONG_PARAM_COUNT;
     }
@@ -1008,7 +1126,7 @@ PHP_FUNCTION(nc_inq_dimname)
     char name[NC_MAX_NAME];
     zval *zname;
 
-    if ((ZEND_NUM_ARGS() != 3) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "llz", &ncid, &dimid, &zname) != SUCCESS))
+    if ((ZEND_NUM_ARGS() != 3) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "llz/", &ncid, &dimid, &zname) != SUCCESS))
     {
         WRONG_PARAM_COUNT;
     }
@@ -1029,7 +1147,7 @@ PHP_FUNCTION(nc_inq_dimlen)
     size_t length;
     zval *zlength;
 
-    if ((ZEND_NUM_ARGS() != 3) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "llz", &ncid, &dimid, &zlength) != SUCCESS))
+    if ((ZEND_NUM_ARGS() != 3) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "llz/", &ncid, &dimid, &zlength) != SUCCESS))
     {
         WRONG_PARAM_COUNT;
     }
@@ -1076,7 +1194,7 @@ PHP_FUNCTION(nc_def_var)
     HashPosition pointer;
 
     if ((ZEND_NUM_ARGS() != 6) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC,
-        "lsllaz", &ncid, &name, &namelen, &xtype, &ndims, &zdimids, &zvarid) != SUCCESS))
+        "lsllaz/", &ncid, &name, &namelen, &xtype, &ndims, &zdimids, &zvarid) != SUCCESS))
     {
         WRONG_PARAM_COUNT;
     }
@@ -1108,7 +1226,7 @@ PHP_FUNCTION(nc_inq_var)
     nc_type xtype;
     zval *zname, *zxtype, *zndims, *zdimids, *znattsp;
 
-    if ((ZEND_NUM_ARGS() != 7) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "llzzzzz",
+    if ((ZEND_NUM_ARGS() != 7) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "llz/z/z/z/z/",
         &ncid, &varid, &zname, &zxtype, &zndims, &zdimids, &znattsp) != SUCCESS))
     {
         WRONG_PARAM_COUNT;
@@ -1141,7 +1259,7 @@ PHP_FUNCTION(nc_inq_varid)
     char *name = NULL;
     zval *zvarid;
 
-    if ((ZEND_NUM_ARGS() != 3) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "lsz", &ncid, &name, &namelen, &zvarid) != SUCCESS))
+    if ((ZEND_NUM_ARGS() != 3) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "lsz/", &ncid, &name, &namelen, &zvarid) != SUCCESS))
     {
         WRONG_PARAM_COUNT;
     }
@@ -1162,7 +1280,7 @@ PHP_FUNCTION(nc_inq_varname)
     char name[NC_MAX_NAME];
     zval *zname;
 
-    if ((ZEND_NUM_ARGS() != 3) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "llz", &ncid, &varid, &zname) != SUCCESS))
+    if ((ZEND_NUM_ARGS() != 3) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "llz/", &ncid, &varid, &zname) != SUCCESS))
     {
         WRONG_PARAM_COUNT;
     }
@@ -1182,7 +1300,7 @@ PHP_FUNCTION(nc_inq_vartype)
     nc_type xtype;
     zval *zxtype;
 
-    if ((ZEND_NUM_ARGS() != 3) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "llz", &ncid, &varid, &zxtype) != SUCCESS))
+    if ((ZEND_NUM_ARGS() != 3) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "llz/", &ncid, &varid, &zxtype) != SUCCESS))
     {
         WRONG_PARAM_COUNT;
     }
@@ -1202,7 +1320,7 @@ PHP_FUNCTION(nc_inq_varndims)
     int ndims;
     zval *zndims;
 
-    if ((ZEND_NUM_ARGS() != 3) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "llz", &ncid, &varid, &zndims) != SUCCESS))
+    if ((ZEND_NUM_ARGS() != 3) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "llz/", &ncid, &varid, &zndims) != SUCCESS))
     {
         WRONG_PARAM_COUNT;
     }
@@ -1254,7 +1372,7 @@ PHP_FUNCTION(nc_inq_varnatts)
     int nattsp;
     zval *znattsp;
 
-    if ((ZEND_NUM_ARGS() != 3) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "llz", &ncid, &varid, &znattsp) != SUCCESS))
+    if ((ZEND_NUM_ARGS() != 3) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "llz/", &ncid, &varid, &znattsp) != SUCCESS))
     {
         WRONG_PARAM_COUNT;
     }
@@ -1275,7 +1393,7 @@ PHP_FUNCTION(nc_inq_attname)
     char name[NC_MAX_NAME];
     zval *zname;
 
-    if ((ZEND_NUM_ARGS() != 4) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "lllz", &ncid, &varid, &attnum, &zname) != SUCCESS))
+    if ((ZEND_NUM_ARGS() != 4) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "lllz/", &ncid, &varid, &attnum, &zname) != SUCCESS))
     {
         WRONG_PARAM_COUNT;
     }
@@ -1299,7 +1417,7 @@ PHP_FUNCTION(nc_get_att)
     zval *zvalue;
     void *value = NULL;
 
-    if ((ZEND_NUM_ARGS() != 4) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "llsz", &ncid, &varid, &name, &namelen, &zvalue) != SUCCESS))
+    if ((ZEND_NUM_ARGS() != 4) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "llsz/", &ncid, &varid, &name, &namelen, &zvalue) != SUCCESS))
     {
         WRONG_PARAM_COUNT;
     }
@@ -1333,7 +1451,7 @@ PHP_FUNCTION(nc_get_var1)
     zval *zindexp, *zvalue;
     void *value = NULL;
 
-    if ((ZEND_NUM_ARGS() != 4) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "llaz", &ncid, &varid, &zindexp, &zvalue) != SUCCESS))
+    if ((ZEND_NUM_ARGS() != 4) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "llaz/", &ncid, &varid, &zindexp, &zvalue) != SUCCESS))
     {
         WRONG_PARAM_COUNT;
     }
@@ -1376,7 +1494,7 @@ PHP_FUNCTION(nc_get_var)
     zval *zvalues;
     void *values = NULL;
 
-    if ((ZEND_NUM_ARGS() != 3) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "llz", &ncid, &varid, &zvalues) != SUCCESS))
+    if ((ZEND_NUM_ARGS() != 3) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "llz/", &ncid, &varid, &zvalues) != SUCCESS))
     {
         WRONG_PARAM_COUNT;
     }
@@ -1416,7 +1534,7 @@ PHP_FUNCTION(nc_get_vara)
     zval *zstart, *zcount, *zvalues;
     void *values = NULL;
 
-    if ((ZEND_NUM_ARGS() != 5) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "llaaz", &ncid, &varid, &zstart, &zcount, &zvalues) != SUCCESS))
+    if ((ZEND_NUM_ARGS() != 5) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "llaaz/", &ncid, &varid, &zstart, &zcount, &zvalues) != SUCCESS))
     {
         WRONG_PARAM_COUNT;
     }
@@ -1471,7 +1589,7 @@ PHP_FUNCTION(nc_get_vars)
     zval *zstart, *zcount, *zstride, *zvalues;
     void *values = NULL;
 
-    if ((ZEND_NUM_ARGS() != 6) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "llaaaz",
+    if ((ZEND_NUM_ARGS() != 6) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "llaaaz/",
         &ncid, &varid, &zstart, &zcount, &zstride, &zvalues) != SUCCESS))
     {
         WRONG_PARAM_COUNT;
@@ -1853,7 +1971,7 @@ PHP_FUNCTION(nc_dump_header)
     zval subarray, var_array, dim_array, att_array, zvalue;
     void *value = NULL;
 
-    if ((ZEND_NUM_ARGS() != 2) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "lz", &ncid, &zheader) != SUCCESS))
+    if ((ZEND_NUM_ARGS() != 2) || (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "lz/", &ncid, &zheader) != SUCCESS))
     {
         WRONG_PARAM_COUNT;
     }
